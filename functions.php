@@ -49,6 +49,7 @@ function vzi_add_product_to_zone($sku, $zone_id) {
     'meta_value' => $sku,
     'posts_per_page' => 1,
     'fields' => 'ids',
+    'post_status' => get_post_types('', 'names'),
   ]);
   if ($found_products) {
     $product_id = $found_products[0];
@@ -67,7 +68,13 @@ function vzi_add_product_to_zone($sku, $zone_id) {
     $product->set_sku($sku);
     $product->set_status('publish');
     $product_id = $product->save();
-    update_post_meta($zone_id, 'vzi_products_in_zone', [$product_id]);
+    $product_zones = get_post_meta($zone_id, 'vzi_products_in_zone', true);
+    if (!$product_zones) {
+      $product_zones = [$product_id];
+    } else {
+      $product_zones[] = $product_id;
+    }
+    update_post_meta($zone_id, 'vzi_products_in_zone', $product_zones);
     $result = $product_id;
   }
 

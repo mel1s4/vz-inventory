@@ -98,7 +98,9 @@ function vzi_update_product($data) {
       $result = vzi_add_product_to_zone($sku, $zone_id);
     } else {
       return rest_ensure_response([
-        'error' => 'Product not found in zone'
+        'error' => 'Product not found in zone',
+        'product_id' => $id,
+        'zone_id' => $zone_id,
       ]);
     }
   }
@@ -115,8 +117,8 @@ function vzi_update_product($data) {
 function vzi_get_zones($data) {
   $zone_id = $data['parent_id'];
 
-  if ($parent == null) {
-    $parent = 0;
+  if ($zone_id == null) {
+    $zone_id = 0;
   }
 
   $args = [
@@ -125,13 +127,15 @@ function vzi_get_zones($data) {
     'post_parent' => $zone_id,
     'orderby' => 'title',
     'order' => 'ASC',
-    'parent_id' => $parent,
     'fields' => ['title', 'ID', 'post_parent'],
   ];
   $zones = get_posts($args);
 
   if ($zone_id > 0) {
     $products_ids = get_post_meta($zone_id, 'vzi_products_in_zone', true);
+    if (!$products_ids) {
+      $products_ids = [];
+    }
     $products = [];
     foreach ($products_ids as $product) {
       $products[] = [
@@ -140,6 +144,8 @@ function vzi_get_zones($data) {
         'sku' => get_post_meta($product, '_sku', true),
       ];
     }
+  } else {
+    $products = [];
   }
 
   return [
@@ -223,6 +229,8 @@ function vzi_delete_zone($data) {
 }
 
 function vzi_check_permission() {
-  return current_user_can('editor');
+  // current user can edit posts
+  // return current_user_can('editor');
+  return current_user_can('edit_pages');
 }
 

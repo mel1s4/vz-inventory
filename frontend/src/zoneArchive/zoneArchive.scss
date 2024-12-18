@@ -21,7 +21,13 @@
 }
 
 .vzi-zone-archive__zone {
-
+  font-size: 1em;
+  padding: 0.5em;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
 }
 
 .vzi-zone-archive__edit {

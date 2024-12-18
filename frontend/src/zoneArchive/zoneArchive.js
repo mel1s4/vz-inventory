@@ -27,26 +27,26 @@ function ZoneArchive () {
     },
     get: async (url, params) => {
       const headers = await api.headers();
-      return axios.get(`${restUrl}${url}`, {
+      return axios.get(`${restUrl}vz-inventory/v1/${url}`, {
         headers,
         params
       });
     },
     post: async (url, data) => {
       const headers = await api.headers();
-      return axios.post(`${restUrl}${url}`, data, {
+      return axios.post(`${restUrl}vz-inventory/v1/${url}`, data, {
         headers,
       });
     },
     put: async (url, data) => {
       const headers = await api.headers();
-      return axios.put(`${restUrl}${url}`, data, {
+      return axios.put(`${restUrl}vz-inventory/v1/${url}`, data, {
         headers,
       });
     },
     delete: async (url, params) => {
       const headers = await api.headers();
-      return axios.delete(`${restUrl}${url}`, {
+      return axios.delete(`${restUrl}vz-inventory/v1/${url}`, {
         headers,
         params
       });
@@ -61,6 +61,10 @@ function ZoneArchive () {
         sku,
         zone_id: parentId,
        });
+       if (result.data.error) {
+         console.error(result.data.error);
+         return;
+       }
        console.log(result);
       const nProduct = result.data.product;
       if (selectedProduct.id === 'new') {
@@ -116,11 +120,24 @@ function ZoneArchive () {
   }
 
   function goToZone(zoneId) {
+    let zId = zoneId;
+    if (zoneId === 'home') {
+      zId = 0;
+    }
+    console.log(newUrl);
     const previousUrlParams = new URLSearchParams(window.location.search);
-    previousUrlParams.set('parent_id', zoneId);
+    previousUrlParams.set('parent_id', zId);
     const newUrl = `${window.location.pathname}?${previousUrlParams.toString()}`;
-    window.history.pushState({}, '', newUrl);
-    fetchZones(zoneId);
+  }
+  
+  function getZoneLink(zoneId) {
+    const previousUrlParams = new URLSearchParams(window.location.search);
+    if (zoneId === 'home') {
+      previousUrlParams.delete('parent_id');
+    } else {
+      previousUrlParams.set('parent_id', zoneId);
+    }
+    return `${window.location.pathname}?${previousUrlParams.toString()}`;
   }
 
   function handleSelectedZoneName(e) {
@@ -154,13 +171,12 @@ function ZoneArchive () {
   }, [selectedZone, selectedProduct]);
 
 
-  useEffect(async () => {
+  useEffect(() => {
     // get the parent id from the URL
     setViewportHeight(window.visualViewport.height);
     window.visualViewport.addEventListener('resize', () => {
       setViewportHeight(window.visualViewport.height);
     });
-    const parentId = new URLSearchParams(window.location.search).get('parent_id');
     if(window.vz_app_params) {
       setRestNonce(window.vz_app_params.rest_nonce);
       setRestUrl(window.vz_app_params.rest_url);
@@ -170,11 +186,18 @@ function ZoneArchive () {
         setProducts(window.vz_app_params.results.products);
         setBreadcrum(window.vz_app_params.results.breadcrumb);
         setParentZoneTitle(window.vz_app_params.results.title);
+        setParentId(window.vz_app_params.results.parent_id);
       }
+      // get parent id from the URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const zone_id = urlParams.get('parent_id');
+      if (zone_id)
+        setParentId(parseInt(zone_id));
+
     }
   }, []);
 
-  async function fetchZones(zone_id = 0) {
+  async function fetchZones(zone_id = 0) { 
     const pID = zone_id || parentId;
     if (zone_id !== parentId) {
       setParentId(zone_id);
@@ -210,13 +233,17 @@ function ZoneArchive () {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await api.put(`zones/${selectedZone.ID}`, { 
+      const params = {
         post_title: selectedZone.post_title,
         parent_id: parentId,
-      });
+      };
+      console.log(params);
+        
+      const response = await api.put(`zones/${selectedZone.ID}`, params );
 
       if (response.data.error) {
         console.error(response.data.error);
+        setLoading(false);
         return;
       }
 
@@ -292,20 +319,12 @@ function ZoneArchive () {
       )}
       <ul className="vzi-breadcrumb-list">
         <li>
-        <a onClick={
-                (e) => {
-                  e.preventDefault();
-                  goToZone(0);
-              }}>Home</a>
+        <a href={getZoneLink('home')}>Home</a>
         </li>
         {
           breadcrum.map((item, index) => (
             <li key={index}>
-              <a onClick={
-                (e) => {
-                  e.preventDefault();
-                  goToZone(item.ID);
-              }}>{item.title}</a>
+              <a href={getZoneLink(item.id)}>{item.title}</a>
             </li>
           ))
         }
@@ -389,12 +408,12 @@ function ZoneArchive () {
             <li key={zone.ID}
                 className={ selectedZone && selectedZone.ID === zone.ID ? '--selected' : ''}>
               <article className="vzi-zone__card">
-                <button className="vzi-zone-archive__zone"
-                        onClick={() => goToZone(zone.ID)}>
+                <a className="vzi-zone-archive__zone"
+                   href={getZoneLink(zone.ID)}>
                   {
                     zone.post_title || 'New Zone'	
                   } 
-                </button>
+                </a>
                 <button className="vzi-button-edit-zone"
                         onClick={(e) => editZone(e, zone.ID)}>
                   Edit
