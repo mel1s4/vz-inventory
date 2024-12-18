@@ -9,10 +9,13 @@ register_post_type('vzi-zones', [
     'name' => __vz('Product Zones'),
     'singular_name' => __vz('Zone')
   ],
+  'hierarchical' => true,
   'public' => false,
   'has_archive' => false,
   'rewrite' => ['slug' => $zones_slug],
-  'show_in_rest' => false
+  'show_in_rest' => false,
+  'supports' => ['title', 'editor'],
+  'show_ui' => true,
 ]);
 
 

@@ -1,8 +1,10 @@
+// include helpers.scss
 
+@import '../helpers.scss';
 
 .vzi-zone-archive__list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(9em, 1fr));
   grid-gap: 0.5em;
   padding: 0;
   list-style: none;
@@ -10,6 +12,11 @@
   li {
     margin: 0;
     padding: 0;
+    &.--selected {
+      .vzi-zone__card {
+        box-shadow: 0px 0px 10px rgba(black, 0.2);
+      }
+    }
   }
 }
 
@@ -21,28 +28,81 @@
 
 }
 
-.vzi-zone-archive__edit-zone {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+.vzi-zone-archive__form__wrapper {
+  
+  @include from (601px) {
+    height: initial !important;
+  }
+  @include upto (600px) {
+    position: fixed;
+    left: 0;
+    height: min-content;
+    right: 0;
+  }
+}
+
+.vzi-archive__actions {
+  display: flex;
+  gap: 1em;
+  justify-content: right;
+}
+
+
+.vzi-archive__actions,
+.vzi-zone-archive__form {
+  margin: 1em;
+  @include upto(600px) {
+    margin: 0;
+    z-index: 1;
+    padding: 1em;
+    border-bottom: none;
+    border-radius: 1em 1em 0 0;
+    box-shadow: 0px -2px 5px 0px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+  }
+
+}
+
+
+.vzi-zone-archive__form {
   background-color: white;
   padding: 1em;
-  border-top: 1px solid #ccc;
-  border-radius: 2em 2em 0 0;
-  box-shadow: 0px -2px 5px 0px rgba(0, 0, 0, 0.1);
-
+  border-radius: 1em;
+  border: 1px solid #ccc;
+  display: flex;
+  flex-wrap: wrap;
+  width: stretch;
+  gap: 1em;
+  .vzi-form__title {
+    width: stretch;
+    margin: 0;
+    font-weight: bold;
+  }
   label {
+    flex-grow: 1;
     p {
       margin: 0;
     }
   }
   input {
     width: 100%;
+    font-size: 1em;
     padding: 0.5em;
-    margin: 0.5em 0;
     border: 1px solid #ccc;
     border-radius: 0.25em;
+  }
+
+  .vzi-zone-archive__delete {
+    border: 1px solid red;
+    color: black;
+    background-color: transparent;
+  }
+  .vzi-zone-archive__save {
+    width: 6em;
+    border: 1px solid #093;
   }
 }
 
@@ -52,14 +112,137 @@
 
 .vzi-zone__card {
   display: flex;
-
+  padding: 0.3em 0em;
+  background-color: #eee;
+  border-radius: 0.25em;
+  border: 1px solid #CCC;
+  transition: all 0.2s ease;
   .vzi-zone-archive__zone {
     background-color: transparent;
     border: none;
     text-align: left;
-
+    width: stretch;
+    cursor: pointer;
     &:hover {
       background-color: #f0f0f0;
     }
+  }
+}
+
+.vzi-button-edit-zone {
+  background-color: transparent;
+  color: #333;
+  border: none;
+  border-left: 1px solid #ccc;
+  padding: 0.5em;
+  cursor: pointer;
+}
+
+.vzi-zone-archive__product-list {
+  list-style: none;
+  display: flex;
+  flex-flow: column;
+  gap: 0.5em;
+  padding: 0;
+}
+
+.vzi-product__card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5em;
+
+  .name {
+    font-weight: bold;
+  }
+}
+
+.vzi-product__card__details {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  .sku {
+    min-width: 5em;
+  }
+}
+
+.vzi-product__card__actions {
+
+  button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 1em;
+    border-left: 1px solid #ccc;
+    transition: all 0.2s ease;
+    &:hover {
+      background-color: #f0f0f0;
+    }
+  }
+}
+
+.vzi-breadcrumb-list {
+  display: flex;
+  gap: 0.5em;
+  padding: 0;
+  list-style: none;
+  margin: 0;
+
+  li:not(:first-child):before {
+    content: '\00BB';
+    margin: 0 0.5em;
+    font-weight: bold;
+  }
+  a {
+    color: #059;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.vzi-no-results {
+  width: fill-available;
+}
+.vzi-no-results__card {
+  padding: 1em;
+  border: 1px dashed #999;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0.25em;
+  text-align: left;
+  width: fill-available;
+}
+
+.vzi-loader {
+  position: fixed;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  &:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    margin: -25px 0 0 -25px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s ease-in-out infinite;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
