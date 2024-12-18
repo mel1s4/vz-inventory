@@ -20,10 +20,10 @@ function ZoneArchive () {
 
   const api = {
     headers: async () => {
-      return {
-        'Content-Type': 'application/json',
-        'X-WP-Nonce': restNonce
-      }
+      // return {
+      //   'Content-Type': 'application/json',
+      //   'X-WP-Nonce': restNonce
+      // }
     },
     get: async (url, params) => {
       const headers = await api.headers();
@@ -191,10 +191,13 @@ function ZoneArchive () {
       // get parent id from the URL
       const urlParams = new URLSearchParams(window.location.search);
       const zone_id = urlParams.get('parent_id');
-      if (zone_id)
+      if (zone_id) {
         setParentId(parseInt(zone_id));
-
+      }
     }
+    const uP = new URLSearchParams(window.location.search);
+    const zid = uP.get('parent_id');
+    fetchZones(parseInt(zid));
   }, []);
 
   async function fetchZones(zone_id = 0) { 
@@ -337,10 +340,13 @@ function ZoneArchive () {
                 onClick={addZone}>
           Add Zone
         </button>
-        <button className="vzi-button add-product"
-                onClick={addProduct}>
-          Add Product
-        </button>
+        { parentId > 0 && (
+            <button className="vzi-button add-product"
+                    onClick={addProduct}>
+              Add Product
+            </button>
+          )}
+
       </div>
       { selectedZone && (
             <form onSubmit={(e) => handleZoneUpdate(e)} 
@@ -355,6 +361,7 @@ function ZoneArchive () {
               </button>
               <button
                   className="vzi-button vzi-zone-archive__cancel"
+                  type="button"
                   onClick={() => setSelectedZone(null)}>
                 Cancel
               </button>
@@ -385,6 +392,7 @@ function ZoneArchive () {
             </button>
             <button
                 className="vzi-button vzi-zone-archive__cancel"
+                type="button"
                 onClick={() => setSelectedProduct(null)}>
               Cancel
             </button>

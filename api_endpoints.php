@@ -229,8 +229,7 @@ function vzi_delete_zone($data) {
 }
 
 function vzi_check_permission() {
-  // current user can edit posts
-  // return current_user_can('editor');
+  return true;
   return current_user_can('edit_pages');
 }
 
