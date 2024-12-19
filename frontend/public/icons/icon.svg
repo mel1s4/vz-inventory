@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 120 120">
+  <!-- Generator: Adobe Illustrator 29.0.1, SVG Export Plug-In . SVG Version: 2.1.0 Build 192)  -->
+  <defs>
+    <style>
+      .st0, .st1 {
+        fill: #231f20;
+      }
+
+      .st1 {
+        font-family: MyriadPro-Regular, 'Myriad Pro';
+        font-size: 12px;
+      }
+
+      .st2 {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <text class="st1" transform="translate(-123.18 -15.46)"><tspan x="0" y="0">Edit</tspan></text>
+  <text class="st1" transform="translate(23.18 -15.46)"><tspan x="0" y="0">Add</tspan></text>
+  <text class="st1" transform="translate(143.74 -15.46)"><tspan x="0" y="0">Delete</tspan></text>
+  <path class="st0" d="M-76.89,82.86l-27.95,6.9,6.9-27.95L-45.59,9.46c3.56-3.56,9.34-3.56,12.91,0l8.14,8.14c3.56,3.56,3.56,9.34,0,12.91l-52.35,52.35Z"/>
+  <path class="st0" d="M-47.02,112.7h-63.27c-10.47,0-18.98-8.52-18.98-18.98V30.45c0-10.47,8.52-18.98,18.98-18.98h42.88l-8.42,9.36h-34.45c-5.31,0-9.63,4.32-9.63,9.63v63.27c0,5.31,4.32,9.63,9.63,9.63h63.27c5.31,0,9.63-4.32,9.63-9.63v-26.78l9.36-8.42v35.2c0,10.47-8.52,18.98-18.98,18.98Z"/>
+  <g>
+    <rect class="st2" x="47.54" y="15" width="24.92" height="90" transform="translate(120 0) rotate(90)"/>
+    <rect class="st2" x="48.18" y="15" width="23.63" height="90" transform="translate(120 120) rotate(180)"/>
+  </g>
+  <path class="st0" d="M206.34,105.48h-32.44c-4.72,0-8.74-3.46-9.43-8.13l-6.87-46.08h65.05l-6.87,46.08c-.7,4.67-4.71,8.13-9.43,8.13Z"/>
+  <rect class="st0" x="147.86" y="32.37" width="84.51" height="15.84" rx="4" ry="4"/>
+  <rect class="st0" x="171.07" y="24.02" width="38.08" height="7.14" rx="3.57" ry="3.57"/>
+</svg>

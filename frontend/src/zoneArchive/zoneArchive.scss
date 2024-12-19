@@ -2,6 +2,10 @@
 
 @import '../helpers.scss';
 
+.vzi-zone-archive {
+  padding-bottom: 10em;
+}
+
 .vzi-zone-archive__list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(9em, 1fr));
@@ -35,7 +39,7 @@
 }
 
 .vzi-zone-archive__form__wrapper {
-  
+  z-index: 2;
   @include from (601px) {
     height: initial !important;
   }
@@ -44,6 +48,7 @@
     left: 0;
     height: min-content;
     right: 0;
+    transform: translateY(-100%);
   }
 }
 
@@ -51,41 +56,37 @@
   display: flex;
   gap: 1em;
   justify-content: right;
+  margin-bottom: 1em;
+  padding: 1em;
+  background-color: white;
 }
 
 
-.vzi-archive__actions,
-.vzi-zone-archive__form {
-  margin: 1em;
-  @include upto(600px) {
-    margin: 0;
-    z-index: 1;
-    padding: 1em;
-    border-bottom: none;
-    border-radius: 1em 1em 0 0;
-    box-shadow: 0px -2px 5px 0px rgba(0, 0, 0, 0.1);
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-  }
+.vzi-button.add-zone {
+  border: 1px solid #093;
+  color: #093;
+  background-color: white;
 
 }
-
 
 .vzi-zone-archive__form {
   background-color: white;
   padding: 1em;
   border-radius: 1em;
   border: 1px solid #ccc;
-  display: flex;
-  flex-wrap: wrap;
   width: stretch;
-  gap: 1em;
+  gap: 0.5em;
+  margin-bottom: 1em;
   .vzi-form__title {
     width: stretch;
     margin: 0;
+    margin-bottom: 0.5em;
     font-weight: bold;
+  }
+  .vzi-form__container {
+    display: flex;
+    gap: 0.5em;
+    width: 100%;
   }
   label {
     flex-grow: 1;
@@ -101,19 +102,65 @@
     border-radius: 0.25em;
   }
 
+  .vzi-zone-archive__cancel {
+    background-color: transparent;
+    color: black;
+    border: 1px solid #ccc;
+  }
+
   .vzi-zone-archive__delete {
-    border: 1px solid red;
+    padding-left: 0;
+    padding-right: 0;
     color: black;
     background-color: transparent;
+    .text-indented {
+      display: none;
+    }
+    .icon {
+      display: inline-block;
+      img {
+        width: auto;
+        height: 1.5em;
+      }
+    }
   }
   .vzi-zone-archive__save {
-    width: 6em;
     border: 1px solid #093;
   }
 }
 
+
+.vzi-archive__actions,
+.vzi-zone-archive__form {
+  @include upto(600px) {
+    margin: 0;
+    z-index: 1;
+    border-radius: 1em;
+    box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    
+  }
+}
+
+
 .vzi-zone-archive__save {
 
+}
+
+.vzi-zone-archive__change-mode {
+  background-color: transparent;
+  border: none;
+  color: #333;
+  width: min-content;
+  border: 1px solid #ccc;
+  border-radius: 0.25em;
+  cursor: pointer;
+  text-align: center;
+  font-weight: bold;
+  text-wrap: nowrap;
 }
 
 .vzi-zone__card {
@@ -135,14 +182,29 @@
   }
 }
 
-.vzi-button-edit-zone {
+.vzi-button-edit-zone,
+.vzi-button-visit-product {
   background-color: transparent;
   color: #333;
   border: none;
   border-left: 1px solid #ccc;
-  padding: 0.5em;
+  padding: 0.3em;
+  display: flex;
+  align-items: center;
+
   cursor: pointer;
+  .text-indented {
+    display: none;
+  }
+  .icon {
+    display: inline-block;
+    img {
+      width: auto;
+      height: 1.5em;
+    }
+  }
 }
+
 
 .vzi-zone-archive__product-list {
   list-style: none;
@@ -167,7 +229,12 @@
   display: flex;
   gap: 0.5em;
   align-items: center;
+  background-color: transparent;;
+  border: none;
+  width: stretch;
+  cursor: pointer;
   .sku {
+    text-align: left;
     min-width: 5em;
   }
 }
@@ -229,6 +296,15 @@
   width: 100%;
   height: 100%;
   background-color: rgba(255, 255, 255, 0.8);
+  p {
+    position: absolute;
+    top: calc(50% + 70px);
+    left: 50%;
+    padding: 0;
+    margin: 0;
+    transform: translate(-50%, -50%);
+    font-size: 1.5em;
+  }
   &:before {
     content: '';
     position: absolute;
@@ -236,7 +312,6 @@
     left: 50%;
     width: 50px;
     height: 50px;
-    margin: -25px 0 0 -25px;
     border: 5px solid #f3f3f3;
     border-top: 5px solid #3498db;
     border-radius: 50%;
@@ -246,9 +321,9 @@
 
 @keyframes spin {
   0% {
-    transform: rotate(0deg);
+    transform: translate(-50%, -50%) rotate(0deg);
   }
   100% {
-    transform: rotate(360deg);
+    transform: translate(-50%, -50%) rotate(360deg);
   }
 }

@@ -5,25 +5,36 @@ import axios from 'axios';
 
 function ZoneArchive () {
   const [zones, setZones] = useState([]);
-  const [selectedZone, setSelectedZone] = useState(null);
+  const [selectedZone, setSelectedZoneVariable] = useState(null);
   const productInputRef = useRef(null);
   const zoneInputRef = useRef(null);
   const [viewportHeight, setViewportHeight] = useState(0);
   const [products, setProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedProduct, setSelectedProductVariable] = useState(null);
   const [parentId, setParentId] = useState(0);
   const [breadcrum, setBreadcrum] = useState([]);
   const [parentZoneTitle, setParentZoneTitle] = useState('');
   const [loading, setLoading] = useState(false);
   const [restNonce, setRestNonce] = useState('');
-  const [restUrl, setRestUrl] = useState('http://localhost/wp-json/');
+  const [restUrl, setRestUrl] = useState('http://192.168.0.188/wp-json/');
+  const [srcUrl, setSrcUrl] = useState('');
+  const [productInputMode, setProductInputMode] = useState('numeric');
+
+  function setSelectedZone(zone) {
+    setSelectedZoneVariable(zone);
+    setSelectedProductVariable(null);
+  }
+  function setSelectedProduct(product) {
+    setSelectedProductVariable(product);
+    setSelectedZoneVariable(null);
+  }
 
   const api = {
     headers: async () => {
-      // return {
-      //   'Content-Type': 'application/json',
-      //   'X-WP-Nonce': restNonce
-      // }
+      return {
+        'Content-Type': 'application/json',
+        // 'X-WP-Nonce': restNonce
+      }
     },
     get: async (url, params) => {
       const headers = await api.headers();
@@ -52,6 +63,18 @@ function ZoneArchive () {
       });
     }
   };
+
+  function VzIcon({icon='edit'}) {
+    const url = window.location.origin;
+    return (
+      <span className="icon">
+        <img src={
+          `${srcUrl}/icons/icon_${icon}.svg`
+        } alt={icon} />
+      </span>
+    );
+  }
+
   async function handleProductUpdate(e) {
     e.preventDefault();
     setLoading(true);
@@ -78,8 +101,9 @@ function ZoneArchive () {
         });
         setProducts(nProducts);
       }
-      setSelectedProduct(null);
+      addProduct();
       setLoading(false);
+      window.scrollTo(0, document.body.scrollHeight);
     } catch (error) {
       console.error(error);
       setLoading(false);
@@ -117,17 +141,6 @@ function ZoneArchive () {
       post_title: '',
     };
     setSelectedZone(exampleZone);
-  }
-
-  function goToZone(zoneId) {
-    let zId = zoneId;
-    if (zoneId === 'home') {
-      zId = 0;
-    }
-    console.log(newUrl);
-    const previousUrlParams = new URLSearchParams(window.location.search);
-    previousUrlParams.set('parent_id', zId);
-    const newUrl = `${window.location.pathname}?${previousUrlParams.toString()}`;
   }
   
   function getZoneLink(zoneId) {
@@ -174,10 +187,13 @@ function ZoneArchive () {
   useEffect(() => {
     // get the parent id from the URL
     setViewportHeight(window.visualViewport.height);
-    window.visualViewport.addEventListener('resize', () => {
+    window.visualViewport.addEventListener(['resize', 'scroll'], () => {
       setViewportHeight(window.visualViewport.height);
     });
     if(window.vz_app_params) {
+      console.log({
+        MELISA: window.vz_app_params
+      });
       setRestNonce(window.vz_app_params.rest_nonce);
       setRestUrl(window.vz_app_params.rest_url);
 
@@ -187,6 +203,7 @@ function ZoneArchive () {
         setBreadcrum(window.vz_app_params.results.breadcrumb);
         setParentZoneTitle(window.vz_app_params.results.title);
         setParentId(window.vz_app_params.results.parent_id);
+        setSrcUrl(window.vz_app_params.src_url);
       }
       // get parent id from the URL
       const urlParams = new URLSearchParams(window.location.search);
@@ -313,11 +330,22 @@ function ZoneArchive () {
     }
   }
 
+  function productLink(productId) {
+    return `${window.location.origin}/wp-admin/post.php?post=${productId}&action=edit`;
+  }
+
+  function toggleInputMode() {
+    productInputRef.current.focus();
+    setProductInputMode(productInputMode === 'numeric' ? 'text' : 'numeric');
+  }
+
   return (
     <section className='vzi-zone-archive'>
       { loading && (
           <div className="vzi-loader">
-            Loading...
+            <p>
+              Loading...
+            </p>
           </div>
       )}
       <ul className="vzi-breadcrumb-list">
@@ -332,33 +360,40 @@ function ZoneArchive () {
           ))
         }
       </ul>
-    <h2>{ parentZoneTitle || 'Zones' }</h2>
-    <section className="vzi-zone-archive__form__wrapper"
-      style={{ top: viewportHeight }}>
-      <div className="vzi-archive__actions">
-        <button className="vzi-button add-zone"
-                onClick={addZone}>
-          Add Zone
-        </button>
-        { parentId > 0 && (
+      <h2>{ parentZoneTitle || 'Home' }</h2>
+      <section className="vzi-zone-archive__form__wrapper"
+                style={{ top: viewportHeight }}>
+        <div className="vzi-archive__actions">
+          <button className="vzi-button add-zone"
+                  onClick={addZone}>
+            <VzIcon icon="add" />
+              Zone
+          </button>
+          { (parentId > 0) && (
             <button className="vzi-button add-product"
                     onClick={addProduct}>
-              Add Product
+              <VzIcon icon="add_white" />
+              Product
             </button>
           )}
-
-      </div>
-      { selectedZone && (
-            <form onSubmit={(e) => handleZoneUpdate(e)} 
+        </div>
+        { selectedZone && (
+          <form onSubmit={(e) => handleZoneUpdate(e)} 
                 className="vzi-zone-archive__form">
-              <p className="vzi-form__title">
-                Edit Zone
-              </p>
-              <button type="button"
-                      className="vzi-button vzi-zone-archive__delete"
-                      onClick={() => deleteZone(selectedZone.ID)}>
-                Delete
-              </button>
+            <p className="vzi-form__title">
+              { selectedZone.ID === 'new' ? 'Add' : 'Edit' } Zone
+            </p>
+            <div className="vzi-form__container">                
+              {selectedZone.ID !== 'new' && (
+                <button type="button"
+                        className="vzi-button vzi-zone-archive__delete"
+                        onClick={() => deleteZone(selectedZone.ID)}>
+                  <VzIcon icon="delete" />
+                  <span className="text-indented">
+                    Delete
+                  </span>
+                </button>
+              )}
               <button
                   className="vzi-button vzi-zone-archive__cancel"
                   type="button"
@@ -376,37 +411,51 @@ function ZoneArchive () {
                       className="vzi-button vzi-zone-archive__save">
                 Save
               </button>
-            </form>
+            </div>
+          </form>
         )}
-      {selectedProduct && (
-          
+        {selectedProduct && (
           <form onSubmit={(e) => handleProductUpdate(e)} 
                 className="vzi-zone-archive__form">
             <p className="vzi-form__title">
-              Edit Product SKU
+              { selectedProduct.id === 'new' ? 'Add' : 'Edit' } Product SKU
             </p>
-            <button type="button"
-                    className="vzi-button vzi-zone-archive__delete"
-                    onClick={() => deleteProduct()}>
-              Delete
-            </button>
-            <button
-                className="vzi-button vzi-zone-archive__cancel"
+            <div className="vzi-form__container">
+              { selectedProduct.id !== 'new' && (
+                <button type="button"
+                        className="vzi-button vzi-zone-archive__delete"
+                        onClick={() => deleteProduct()}>
+                  <VzIcon icon="delete" />
+                  <span className="text-indented">
+                    Delete
+                  </span>
+                </button>
+                )}
+              <button
+                  className="vzi-button vzi-zone-archive__cancel"
+                  type="button"
+                  onClick={() => setSelectedProduct(null)}>
+                Cancel
+              </button>
+              <label>
+                <input type="text"
+                      name="sku"
+                      inputmode={productInputMode}
+                      ref={productInputRef}
+                      onChange={(e) => handleselectedProductSku(e)}
+                      value={selectedProduct.sku} />
+              </label>
+              <button 
                 type="button"
-                onClick={() => setSelectedProduct(null)}>
-              Cancel
-            </button>
-            <label>
-              <input type="text" 
-                    name="sku"
-                    ref={productInputRef}
-                    onChange={(e) => handleselectedProductSku(e)}
-                    value={selectedProduct.sku} />
-            </label>
-            <button type="submit"
-                    className="vzi-button vzi-zone-archive__save">
-              Save
-            </button>
+                onClick={() => toggleInputMode()}
+                className="vz-button vzi-zone-archive__change-mode">
+                { productInputMode === 'numeric' ? 'a-Z' : '0-9'}
+              </button>
+              <button type="submit"
+                      className="vzi-button vzi-zone-archive__save">
+                Save
+              </button>
+            </div>
           </form>
         )}
       </section>
@@ -417,14 +466,17 @@ function ZoneArchive () {
                 className={ selectedZone && selectedZone.ID === zone.ID ? '--selected' : ''}>
               <article className="vzi-zone__card">
                 <a className="vzi-zone-archive__zone"
-                   href={getZoneLink(zone.ID)}>
+                    href={getZoneLink(zone.ID)}>
                   {
                     zone.post_title || 'New Zone'	
                   } 
                 </a>
                 <button className="vzi-button-edit-zone"
                         onClick={(e) => editZone(e, zone.ID)}>
-                  Edit
+                  <VzIcon />
+                  <span className="text-indented">
+                    Edit
+                  </span>
                 </button>
               </article>
             </li>
@@ -440,7 +492,6 @@ function ZoneArchive () {
             </li>
           )}
       </ul>
-
       <ul className="vzi-zone-archive__product-list">
         {(parentId > 0 && products.length === 0) && (
           <li className="vzi-no-results">
@@ -453,19 +504,22 @@ function ZoneArchive () {
           products.map(product => (
             <li key={product.id}>
               <article className="vzi-product__card">
-                <div className="vzi-product__card__details">
+                <button className="vzi-product__card__details"
+                      onClick={(e) => editProduct(product.id)}>
                   <p className="sku">
                     { product.sku || 'No SKU' }
                   </p>
                   <p className="name">
                     { product.title || 'New Product'	}
                   </p>
-                </div>
+                </button>
                 <div className="vzi-product__card__actions">
-                  <button className="vzi-button-edit-product"
-                          onClick={(e) => editProduct(product.id)}>
-                    Edit
-                  </button>
+                  <a className="vzi-button-visit-product"
+                          target="_blank"
+                          href={productLink(product.id)}>
+                    <VzIcon icon="visit" />
+                    <span className="text-indented">Edit in WordPress</span>
+                  </a>
                 </div>
               </article>
             </li>

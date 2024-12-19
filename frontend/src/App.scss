@@ -7,14 +7,25 @@ body {
 }
 
 .vzi-button {
-  padding: 0.5em 1em;
+  padding: 0.8em 1.2em;
   border-radius: 0.25em;
   border: none;
   background-color: #093;
   color: white;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  .icon {
+    pointer-events: none;
+    height: 1em;
+    width: auto;
+    img {
+      height: 1em;
+      width: auto;
+    }
+  }
 }
-
 
 .vzi-app {
   width: 500px;

@@ -19,6 +19,8 @@ function vzi_load_init_file() {
   include 'init.php';
 }
 
+
+// localhost dev CORS
 if ($_SERVER['HTTP_HOST'] == 'localhost') {
   header("Access-Control-Allow-Origin: *");
   header("Access-Control-Allow-Methods: GET, POST, OPTIONS, DELETE, PUT");
@@ -42,7 +44,8 @@ function vzi_add_product_meta_box() {
 }
 
 
-function vzi_add_product_to_zone($sku, $zone_id) {
+function vzi_add_product_to_zone($isku, $zone_id) {
+  $sku = sanitize_text_field(strtoupper(str_replace(' ', '', $isku)));
   $found_products = get_posts([
     'post_type' => 'product',
     'meta_key' => '_sku',
@@ -66,7 +69,7 @@ function vzi_add_product_to_zone($sku, $zone_id) {
     $product = new WC_Product_Simple();
     $product->set_name($sku);
     $product->set_sku($sku);
-    $product->set_status('publish');
+    $product->set_status('draft');
     $product_id = $product->save();
     $product_zones = get_post_meta($zone_id, 'vzi_products_in_zone', true);
     if (!$product_zones) {
@@ -107,7 +110,7 @@ function vzi_settings_page() {
 add_action('admin_init', 'vzi_intercept_frontend');
 function vzi_intercept_frontend() {
   if (isset($_GET['page']) && $_GET['page'] == 'vz-inventory-settings') {
-    include 'frontend/index.php'; 
+    include plugin_dir_path(__FILE__) . 'frontend/index.php'; 
     die();
   }
 }
