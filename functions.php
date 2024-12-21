@@ -4,7 +4,7 @@
 Plugin Name: Viroz Inventory
 Plugin URI: https://viroz.studio/vz-inventory
 Description: This plugin will help you manage the quantities and places of your products.
-Version: 0.0.1
+Version: 0.1.0
 Author: Melisa Viroz
 Author URI: https://melisaviroz.com
 License: GPL2

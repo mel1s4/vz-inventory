@@ -41,10 +41,11 @@
 .vzi-zone-archive__form__wrapper {
   z-index: 2;
   @include from (601px) {
-    height: initial !important;
+
   }
   @include upto (600px) {
     position: fixed;
+    top: 100vh;
     left: 0;
     height: min-content;
     right: 0;

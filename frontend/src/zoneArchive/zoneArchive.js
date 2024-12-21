@@ -16,7 +16,7 @@ function ZoneArchive () {
   const [parentZoneTitle, setParentZoneTitle] = useState('');
   const [loading, setLoading] = useState(false);
   const [restNonce, setRestNonce] = useState('');
-  const [restUrl, setRestUrl] = useState('http://192.168.0.188/wp-json/');
+  const [restUrl, setRestUrl] = useState(null);
   const [srcUrl, setSrcUrl] = useState('');
   const [productInputMode, setProductInputMode] = useState('numeric');
 
@@ -30,33 +30,33 @@ function ZoneArchive () {
   }
 
   const api = {
-    headers: async () => {
+    headers: () => {
       return {
         'Content-Type': 'application/json',
-        // 'X-WP-Nonce': restNonce
+        'X-WP-Nonce': restNonce
       }
     },
     get: async (url, params) => {
-      const headers = await api.headers();
+      const headers = api.headers();
       return axios.get(`${restUrl}vz-inventory/v1/${url}`, {
         headers,
         params
       });
     },
     post: async (url, data) => {
-      const headers = await api.headers();
+      const headers = api.headers();
       return axios.post(`${restUrl}vz-inventory/v1/${url}`, data, {
         headers,
       });
     },
     put: async (url, data) => {
-      const headers = await api.headers();
+      const headers = api.headers();
       return axios.put(`${restUrl}vz-inventory/v1/${url}`, data, {
         headers,
       });
     },
     delete: async (url, params) => {
-      const headers = await api.headers();
+      const headers = api.headers();
       return axios.delete(`${restUrl}vz-inventory/v1/${url}`, {
         headers,
         params
@@ -185,11 +185,7 @@ function ZoneArchive () {
 
 
   useEffect(() => {
-    // get the parent id from the URL
-    setViewportHeight(window.visualViewport.height);
-    window.visualViewport.addEventListener(['resize', 'scroll'], () => {
-      setViewportHeight(window.visualViewport.height);
-    });
+
     if(window.vz_app_params) {
       console.log({
         MELISA: window.vz_app_params
@@ -212,9 +208,9 @@ function ZoneArchive () {
         setParentId(parseInt(zone_id));
       }
     }
-    const uP = new URLSearchParams(window.location.search);
-    const zid = uP.get('parent_id');
-    fetchZones(parseInt(zid));
+    // const uP = new URLSearchParams(window.location.search);
+    // const zid = uP.get('parent_id');
+    // fetchZones(parseInt(zid));
   }, []);
 
   async function fetchZones(zone_id = 0) { 
@@ -361,8 +357,7 @@ function ZoneArchive () {
         }
       </ul>
       <h2>{ parentZoneTitle || 'Home' }</h2>
-      <section className="vzi-zone-archive__form__wrapper"
-                style={{ top: viewportHeight }}>
+      <section className="vzi-zone-archive__form__wrapper">
         <div className="vzi-archive__actions">
           <button className="vzi-button add-zone"
                   onClick={addZone}>

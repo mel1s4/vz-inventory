@@ -1,3 +1,5 @@
+rm  'vz-inventory-plugin.zip';
+
 cd frontend;
 npm install;
 npm run build;
@@ -10,6 +12,7 @@ mv main.*.css main.css;
 mv main.*.css.map main.css.map;
 
 cd ../../../../;
+
 mkdir 'vz-inventory-plugin';
 mkdir 'vz-inventory-plugin/frontend';
 mkdir 'vz-inventory-plugin/frontend/build';
