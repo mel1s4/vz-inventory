@@ -1,3 +1,5 @@
+![image](https://github.com/user-attachments/assets/5debba93-a0ce-4eac-a7fa-67244672faa1)
+
 # Viroz Inventory
 This is a WordPress plugin that is open source and aims at controlling que inventory, quantities places and movements, of products and services.
 
