@@ -16,6 +16,7 @@ register_post_type('vzi-zones', [
   'show_in_rest' => false,
   'supports' => ['title', 'editor'],
   'show_ui' => true,
+  'show_in_menu' => 'vz-inventory',
 ]);
 
 

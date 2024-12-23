@@ -10,6 +10,20 @@ Author URI: https://melisaviroz.com
 License: GPL2
 */
 
+// if woocommerce is not installed, send notification
+if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+  add_action('admin_notices', 'vzi_woocommerce_not_installed');
+  function vzi_woocommerce_not_installed() {
+    ?>
+    <div class="notice notice-error is-dismissible">
+      <p><?php _e('Viroz Inventory requires WooCommerce to function properly.', 'vzi'); ?></p>
+    </div>
+    <?php
+  }
+  return;
+}
+
+
 if (!defined('ABSPATH')) {
   die;
 }
@@ -93,23 +107,32 @@ function vzi_product_zones_meta_box($post) {
 add_action('admin_menu', 'vzi_add_settings_page');
 function vzi_add_settings_page() {
   add_menu_page(
-    'Viroz Inventory Settings',
-    'Viroz Inventory',
+    'VZ Inventory',
+    'VZ Inventory',
     'manage_options',
-    'vz-inventory-settings',
+    'vz-inventory',
     'vzi_settings_page',
     'dashicons-store',
     100
   );
+
+  add_submenu_page(
+    'vz-inventory',
+    'Zone Navigation',
+    'Zone Navigation',
+    'manage_options',
+    'vz-inventory-navigation',
+    'vzi_settings_page'
+  );
 }
 
 function vzi_settings_page() {
-
+  return; // silence is golden
 }
 
 add_action('admin_init', 'vzi_intercept_frontend');
 function vzi_intercept_frontend() {
-  if (isset($_GET['page']) && $_GET['page'] == 'vz-inventory-settings') {
+  if (isset($_GET['page']) && $_GET['page'] == 'vz-inventory-navigation') {
     include plugin_dir_path(__FILE__) . 'frontend/index.php'; 
     die();
   }
