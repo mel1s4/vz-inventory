@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef, use } from 'react';
+import { _vz } from '../translations';
 import './zoneArchive.scss';
 // import api from '../api';	
 import axios from 'axios';
 
 function ZoneArchive () {
+  const devEnv = true;
   const [zones, setZones] = useState([]);
   const [selectedZone, setSelectedZoneVariable] = useState(null);
   const productInputRef = useRef(null);
   const zoneInputRef = useRef(null);
-  const [viewportHeight, setViewportHeight] = useState(0);
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProductVariable] = useState(null);
   const [parentId, setParentId] = useState(0);
@@ -30,7 +31,20 @@ function ZoneArchive () {
   }
 
   const api = {
+    restUrl: () => {
+      if (devEnv) {
+        return 'http://localhost/wp-json/';
+      }
+      return restUrl;
+    },
     headers: () => {
+
+      if (devEnv) {
+        return {
+          'Content-Type': 'application/json',
+        }
+      }
+
       return {
         'Content-Type': 'application/json',
         'X-WP-Nonce': restNonce
@@ -38,26 +52,26 @@ function ZoneArchive () {
     },
     get: async (url, params) => {
       const headers = api.headers();
-      return axios.get(`${restUrl}vz-inventory/v1/${url}`, {
+      return axios.get(`${api.restUrl()}vz-inventory/v1/${url}`, {
         headers,
         params
       });
     },
     post: async (url, data) => {
       const headers = api.headers();
-      return axios.post(`${restUrl}vz-inventory/v1/${url}`, data, {
+      return axios.post(`${api.restUrl()}vz-inventory/v1/${url}`, data, {
         headers,
       });
     },
     put: async (url, data) => {
       const headers = api.headers();
-      return axios.put(`${restUrl}vz-inventory/v1/${url}`, data, {
+      return axios.put(`${api.restUrl()}vz-inventory/v1/${url}`, data, {
         headers,
       });
     },
     delete: async (url, params) => {
       const headers = api.headers();
-      return axios.delete(`${restUrl}vz-inventory/v1/${url}`, {
+      return axios.delete(`${api.restUrl()}vz-inventory/v1/${url}`, {
         headers,
         params
       });
@@ -65,7 +79,6 @@ function ZoneArchive () {
   };
 
   function VzIcon({icon='edit'}) {
-    const url = window.location.origin;
     return (
       <span className="icon">
         <img src={
@@ -137,8 +150,9 @@ function ZoneArchive () {
 
   async function addZone() {
     const exampleZone = {
-      ID: 'new',
+      id: 'new',
       post_title: '',
+      color: '#000000',
     };
     setSelectedZone(exampleZone);
   }
@@ -167,7 +181,7 @@ function ZoneArchive () {
   function editZone(e, zoneId) {
     console.log(zoneId);
     e.preventDefault();
-    const nSelected = zones.find(zone => zone.ID === zoneId);
+    const nSelected = zones.find(zone => zone.id === zoneId);
     setSelectedZone(nSelected);
   }
 
@@ -185,11 +199,7 @@ function ZoneArchive () {
 
 
   useEffect(() => {
-
     if(window.vz_app_params) {
-      console.log({
-        MELISA: window.vz_app_params
-      });
       setRestNonce(window.vz_app_params.rest_nonce);
       setRestUrl(window.vz_app_params.rest_url);
 
@@ -208,9 +218,11 @@ function ZoneArchive () {
         setParentId(parseInt(zone_id));
       }
     }
-    // const uP = new URLSearchParams(window.location.search);
-    // const zid = uP.get('parent_id');
-    // fetchZones(parseInt(zid));
+    if (devEnv) {
+      const uP = new URLSearchParams(window.location.search);
+      const zid = parseInt(uP.get('parent_id')) || 0;
+      fetchZones(zid);
+    }
   }, []);
 
   async function fetchZones(zone_id = 0) { 
@@ -252,10 +264,10 @@ function ZoneArchive () {
       const params = {
         post_title: selectedZone.post_title,
         parent_id: parentId,
+        color: selectedZone.color
       };
-      console.log(params);
         
-      const response = await api.put(`zones/${selectedZone.ID}`, params );
+      const response = await api.put(`zones/${selectedZone.id}`, params );
 
       if (response.data.error) {
         console.error(response.data.error);
@@ -265,18 +277,20 @@ function ZoneArchive () {
 
       if (response.data.id) {
         let updatedZones;
-        if (selectedZone.ID === 'new') {
+        if (selectedZone.id === 'new') {
           updatedZones = [...zones, {
-            ID: response.data.id,
+            id: response.data.id,
             post_title: selectedZone.post_title,
+            color: selectedZone.color
           }];
           setZones(updatedZones);
         } else {
           updatedZones = zones.map(zone => {
-            if (zone.ID === selectedZone.ID) {
+            if (zone.id === selectedZone.id) {
               return {
                 ...zone,
                 post_title: selectedZone.post_title,
+                color: selectedZone.color
               }
             }
             return zone;
@@ -293,11 +307,14 @@ function ZoneArchive () {
   }
 
   async function deleteZone(zoneId) {
+    if (!window.confirm(_vz('zone-delete-confirm'))) {
+      return;
+    }
     setLoading(true);
     try {
       const response = await api.delete(`zones/${zoneId}`);
       console.log(response);
-      const updatedZones = zones.filter(zone => zone.ID !== zoneId);
+      const updatedZones = zones.filter(zone => zone.id !== zoneId);
       setZones(updatedZones);
       setSelectedZone(null);
       setLoading(false);
@@ -307,7 +324,20 @@ function ZoneArchive () {
     }
   }
 
+  function handleSelectedZoneColor(e) {
+    e.preventDefault();
+    const color = e.target.value;
+    const nSelectedZone = {
+      ...selectedZone,
+      color,
+    }
+    setSelectedZone(nSelectedZone);
+  }
+
   async function deleteProduct() {
+    if (!window.confirm(_vz('product-delete-confirm'))) {
+      return;
+    }
     setLoading(true);
     try {
       const response = await api.delete(`product/${selectedProduct.id}`, {
@@ -333,6 +363,40 @@ function ZoneArchive () {
   function toggleInputMode() {
     productInputRef.current.focus();
     setProductInputMode(productInputMode === 'numeric' ? 'text' : 'numeric');
+  }
+
+  function contrastColor(hexcolor) {
+    const r = parseInt(hexcolor.substr(1, 2), 16);
+    const g = parseInt(hexcolor.substr(3, 2), 16);
+    const b = parseInt(hexcolor.substr(5, 2), 16);
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    return (yiq >= 150) ? true : false;
+  }
+
+  function darken(color, percent) {
+    const num = parseInt(color.slice(1), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = (num >> 16) - amt;
+    const B = (num >> 8 & 0x00FF) - amt;
+    const G = (num & 0x0000FF) - amt;
+    return `#${(0x1000000 + (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 + (B < 255 ? (B < 1 ? 0 : B) : 255) * 0x100 + (G < 255 ? (G < 1 ? 0 : G) : 255)).toString(16).slice(1)}`;
+  }
+
+  function lighten(color, percent) {  
+    const num = parseInt(color.slice(1), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = (num >> 16) + amt;
+    const B = (num >> 8 & 0x00FF) + amt;
+    const G = (num & 0x0000FF) + amt;
+    return `#${(0x1000000 + (R > 255 ? 255 : R) * 0x10000 + (B > 255 ? 255 : B) * 0x100 + (G > 255 ? 255 : G)).toString(16).slice(1)}`;
+  }
+
+  function setColors(color) {
+    return {
+      backgroundColor: color,
+      color: contrastColor(color) ? darken(color, 80) : lighten(color, 60),
+      borderColor: darken(color, 20),
+    }
   }
 
   return (
@@ -376,13 +440,34 @@ function ZoneArchive () {
           <form onSubmit={(e) => handleZoneUpdate(e)} 
                 className="vzi-zone-archive__form">
             <p className="vzi-form__title">
-              { selectedZone.ID === 'new' ? 'Add' : 'Edit' } Zone
+              { selectedZone.id === 'new' ? 'Add' : 'Edit' } Zone
             </p>
             <div className="vzi-form__container">                
-              {selectedZone.ID !== 'new' && (
+              
+
+              <label className="vzi-form__input__label">
+                <input type="text" 
+                      className="vzi-form__input"
+                      name="name"
+                      ref={zoneInputRef}
+                      onChange={(e) => handleSelectedZoneName(e)}
+                      value={selectedZone.post_title} />
+              </label>
+
+              <label>
+                <input type="color"
+                      name="color"
+                      value={selectedZone?.color}
+                      onChange={(e) => handleSelectedZoneColor(e)}
+                       className="vzi-form__color-picker" />
+              </label>
+              
+            </div>
+            <div className="vzi-form__actions">
+              {selectedZone.id !== 'new' && (
                 <button type="button"
                         className="vzi-button vzi-zone-archive__delete"
-                        onClick={() => deleteZone(selectedZone.ID)}>
+                        onClick={() => deleteZone(selectedZone.id)}>
                   <VzIcon icon="delete" />
                   <span className="text-indented">
                     Delete
@@ -395,13 +480,7 @@ function ZoneArchive () {
                   onClick={() => setSelectedZone(null)}>
                 Cancel
               </button>
-              <label>
-                <input type="text" 
-                      name="name"
-                      ref={zoneInputRef}
-                      onChange={(e) => handleSelectedZoneName(e)}
-                      value={selectedZone.post_title} />
-              </label>
+              
               <button type="submit"
                       className="vzi-button vzi-zone-archive__save">
                 Save
@@ -457,17 +536,18 @@ function ZoneArchive () {
       <ul className="vzi-zone-archive__list">
         {
           zones.map(zone => (
-            <li key={zone.ID}
-                className={ selectedZone && selectedZone.ID === zone.ID ? '--selected' : ''}>
-              <article className="vzi-zone__card">
+            <li key={zone.id}
+                className={ selectedZone && selectedZone.id === zone.id ? '--selected' : ''}>
+              <article className="vzi-zone__card"
+                       style={setColors(zone.color)}>
                 <a className="vzi-zone-archive__zone"
-                    href={getZoneLink(zone.ID)}>
+                    href={getZoneLink(zone.id)}>
                   {
                     zone.post_title || 'New Zone'	
                   } 
                 </a>
                 <button className="vzi-button-edit-zone"
-                        onClick={(e) => editZone(e, zone.ID)}>
+                        onClick={(e) => editZone(e, zone.id)}>
                   <VzIcon />
                   <span className="text-indented">
                     Edit

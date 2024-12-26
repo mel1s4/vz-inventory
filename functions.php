@@ -10,6 +10,10 @@ Author URI: https://melisaviroz.com
 License: GPL2
 */
 
+function vzi_is_env() {
+  return true;;
+}
+
 // if woocommerce is not installed, send notification
 if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
   add_action('admin_notices', 'vzi_woocommerce_not_installed');

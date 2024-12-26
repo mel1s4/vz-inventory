@@ -1,7 +1,4 @@
 <?php
-
-// All of these endpoints are for 'editor' role only
-
 add_action('rest_api_init', 'vzi_register_endpoints');
 function vzi_register_endpoints() {
   register_rest_route('vz-inventory/v1', '/zones', [
@@ -32,15 +29,12 @@ function vzi_register_endpoints() {
     'methods' => 'DELETE',
     'callback' => 'vzi_delete_zone',
     'permission_callback' => 'vzi_check_permission'
-  ]);
-  // id might have letters
- 
+  ]); 
   register_rest_route('vz-inventory/v1', '/product/(?P<id>[\w-]+)', [
     'methods' => 'POST',
     'callback' => 'vzi_update_product',
     'permission_callback' => 'vzi_check_permission'
   ]);
-
   register_rest_route('vz-inventory/v1', '/product/(?P<id>\d+)', [
     'methods' => 'DELETE',
     'callback' => 'vzi_delete_product_from_zone',
@@ -148,8 +142,18 @@ function vzi_get_zones($data) {
     $products = [];
   }
 
+  $zones_filtered = [];
+  foreach ($zones as $zone) {
+    $zones_filtered[] = [
+      'id' => $zone->ID,
+      'post_title' => $zone->post_title,
+      'parent_id' => $zone->post_parent,
+      'color' => get_post_meta($zone->ID, 'vzi_zone_color', true),
+    ];
+  }
+
   return [
-    'zones' => $zones,
+    'zones' => $zones_filtered,
     'products' => $products,
     'breadcrumb' => vzi_get_zone_breadcrumb($zone_id),
     'title' => get_the_title($zone_id),
@@ -199,6 +203,7 @@ function vzi_create_zone($data) {
 function vzi_update_zone($data) {
   $id = $data['id'];
   $title = $data['post_title'];
+  $color = $data['color'];
   if ( $id === 'new') {
     $parent_id = $data['parent_id'] ? $data['parent_id'] : 0;
     $zone = [
@@ -215,6 +220,7 @@ function vzi_update_zone($data) {
     ];
     wp_update_post($zone);
   }
+  update_post_meta($id, 'vzi_zone_color', $color);
   return rest_ensure_response(
     [
       'message' => 'success', 
@@ -229,7 +235,9 @@ function vzi_delete_zone($data) {
 }
 
 function vzi_check_permission() {
-  return true;
+  if (vzi_is_env()) {
+    return true;
+  }
   return current_user_can('edit_pages');
 }
 

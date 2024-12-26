@@ -1,0 +1,10 @@
+{
+  "zone-delete-confirm": {
+    "en": "Are you sure you want to delete this zone?",
+    "es": "¿Estás seguro de que quieres eliminar esta zona?"
+  },
+  "product-delete-confirm": {
+    "en": "Are you sure you want to delete this product?",
+    "es": "¿Estás seguro de que quieres eliminar este producto?"
+  }
+}
