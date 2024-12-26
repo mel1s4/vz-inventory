@@ -12,9 +12,10 @@ Calculating large ammounts of logs into their correct result numbers based on th
 
 # Todo
 ## V0.5 feature list:
-[ ] Easy way to set development environment
-[ ] Make wp admin submenu - Zones, Inventory, Consolidations
-[ ] Add color to zone
+[X] Easy way to set development environment
+[X] Make wp admin submenu - Zones, Inventory, Consolidations
+[X] Add color to zone
+[ ] Add product by SKU and or Name
 [ ] Alert before deleting a product and zone
 [ ] Select products and zones
 [ ] Delete selected products and zones
@@ -28,18 +29,31 @@ Calculating large ammounts of logs into their correct result numbers based on th
 [ ] Create table, if not exists '[prefix]vz_inventory_log'
     log_id[primary] | timestamp | user_id | zone_id | product_id | type [ add, subtract, reset ] | Quantity | motive [entry, sell, adjustment, inventory, consolidation]
 [ ] Show in single product -> Calculate total quantity of product 
-
+[ ] Information about the date and user of the log
+[ ] Product quantities and places search archive
 [ ] The Fun Stuff -> Consolidations - a place where the total quantity of products is consolidated in a single registry to make counting easier. You can see the actions of each users and how the total came to be. Accept it to consolidate it and update WooCommerce quantity
 
 
-
 # V2 - Product Pipelines
+[ ] Pipe line post type
+[ ] Create pipe line page
+[ ] Pipe line stages, its resources and responsibles
+[ ] Pipe line estimated time 
+[ ] Pipe line user actions dashboard
+
 In this version administrators will be able to sell compounded products - which depend on the quantity of other products, to be able to quantify resources and pipelines
 WooCommerce will be able to display the max ammount of producable products and administrators will be able to know the state and the responsible users to finish the product and deliver it.
 
 # V3 - Offers (WooCommerce Override)
+[ ] Resources Post Type [relates directly to the inventory data]
+[ ] Offers Post Type - What resources it need, pipelines it triggers
 As you can see products are not products in woocommerce, they are offers. A product can be offered multiple times, but still be available until one is processed. in this version we aim to create a new interface for eCommerce where retailers can offer the same products in multiple ways - compounded, processed, raw, I hope you get it, and still manage their inventory understandibly. Its still kinda far away but thats the aim
 
 # V4 - Purchases 
+[ ] Supplier Post Type
+[ ] Purchases Post Type
+[ ] Resources from supplier, their cost
+[ ] Purchases total spending
+[ ] Purchases total value
 top secret, my brain hasn't told me yet but it will aim to manage the entries of resources to the commerce, manage their costs and availability or resources, and therefore products, and therefore, offers. Yes im a genius 
 
