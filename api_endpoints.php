@@ -6,25 +6,16 @@ function vzi_register_endpoints() {
     'callback' => 'vzi_get_zones',
     'permission_callback' => 'vzi_check_permission'
   ]);
-
   register_rest_route('vz-inventory/v1', '/zones/(?P<id>\d+)', [
     'methods' => 'GET',
     'callback' => 'vzi_get_zone',
     'permission_callback' => 'vzi_check_permission'
   ]);
-
-  register_rest_route('vz-inventory/v1', '/zones', [
-    'methods' => 'POST',
-    'callback' => 'vzi_create_zone',
-    'permission_callback' => 'vzi_check_permission'
-  ]);
-
   register_rest_route('vz-inventory/v1', '/zones/(?P<id>[\w-]+)', [
     'methods' => 'PUT',
     'callback' => 'vzi_update_zone',
     'permission_callback' => 'vzi_check_permission'
   ]);
-
   register_rest_route('vz-inventory/v1', '/zones/(?P<id>\d+)', [
     'methods' => 'DELETE',
     'callback' => 'vzi_delete_zone',
@@ -35,45 +26,10 @@ function vzi_register_endpoints() {
     'callback' => 'vzi_update_product',
     'permission_callback' => 'vzi_check_permission'
   ]);
-  register_rest_route('vz-inventory/v1', '/product/(?P<id>\d+)', [
-    'methods' => 'DELETE',
-    'callback' => 'vzi_delete_product_from_zone',
-    'permission_callback' => 'vzi_check_permission'
-  ]);
-}
-
-function vzi_delete_product_from_zone($data) {
-  $zone_id = $data['zone_id'];
-  $product_id = $data['id'];
-
-  if (vzi_remove_product_from_zone($product_id, $zone_id)) {
-    return rest_ensure_response([
-      'message' => 'success'
-    ]);
-  } else {
-    return rest_ensure_response([
-      'error' => 'Product not found in zone',
-      'product_id' => $product_id,
-      'zone_id' => $zone_id,
-    ]);
-  }
-}
-
-function vzi_remove_product_from_zone($id, $zone_id) {
-  $products_in_zone = get_post_meta($zone_id, 'vzi_products_in_zone', true);
-  $index = array_search($id, $products_in_zone);
-  if ($index !== false) {
-    unset($products_in_zone[$index]);
-    update_post_meta($zone_id, 'vzi_products_in_zone', $products_in_zone);
-    return true;
-  } else {
-    return false;
-  }
 }
 
 function vzi_update_product($data) {
   $zone_id = $data['zone_id'];
-  // if the zone is not a valid zone, return error
   $zone = get_post($zone_id);
   if (!$zone || $zone->post_type != 'vzi-zones') {
     return rest_ensure_response([
@@ -84,20 +40,14 @@ function vzi_update_product($data) {
   $sku = $data['sku'];
   $id = $data['id'];
   $title = $data['title'];
+  $quantity = $data['quantity'];
+  $isInventory = $data['isInventory'];
   $result = false;
 
   if ($id == 'new') {
-    $result = vzi_add_product_to_zone($sku, $zone_id, $title);
+    $result = vzi_add_product_to_zone($sku, $zone_id, $quantity, $title);
   } else {
-    if ( vzi_remove_product_from_zone($id, $zone_id) ) {
-      $result = vzi_add_product_to_zone($sku, $zone_id, $title);
-    } else {
-      return rest_ensure_response([
-        'error' => 'Product not found in zone',
-        'product_id' => $id,
-        'zone_id' => $zone_id,
-      ]);
-    }
+    vzi_product_log($sku, $zone_id, $title, $quantity, $isInventory);
   }
   return rest_ensure_response([
     'message' => 'success',
@@ -184,21 +134,6 @@ function vzi_get_zone_breadcrumb($zone_id) {
 function vzi_get_zone($data) {
   $zone = get_post($data['id']);
   return $zone;
-}
-
-function vzi_create_zone($data) {
-  $parent_id = $data['parent_id'] ? $data['parent_id'] : 0;
-  $zone = [
-    'post_title' => $data['post_title'],
-    'post_status' => 'publish',
-    'post_type' => 'vzi-zones',
-    'post_parent' => $parent_id,
-  ];
-  $zone = wp_insert_post($zone);
-  // return get_post($zone);
-  return rest_ensure_response([
-    'id' => $zone
-  ]);
 }
 
 function vzi_update_zone($data) {

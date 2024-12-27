@@ -78,6 +78,11 @@
   width: stretch;
   gap: 0.5em;
   margin-bottom: 1em;
+  .vzi-zone-archive__form__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
   .vzi-form__title {
     width: stretch;
     margin: 0;
@@ -89,6 +94,8 @@
     gap: 0.5em;
     width: 100%;
     margin-bottom: 0.5em;
+    flex-wrap: wrap;
+    justify-content: center;
   }
   label {
     p {
@@ -105,7 +112,6 @@
     flex-grow: 1;
   }
   .vzi-form__input {
-    width: 100%;
     font-size: 1em;
     padding: 0.5em;
     border: 1px solid #ccc;
@@ -346,3 +352,48 @@
   }
 }
 
+.vz-fill {
+  width: 100%;
+}
+
+.vzi-add {
+  background-color: transparent;
+  border: #093 1px solid;
+}
+
+.vzi-quantity {
+  width: 8em;
+}
+
+.vzi-reset {
+  background-color: blue;
+}
+
+.vzi-subtract {
+  background-color: transparent;
+  border: #f00 1px solid;
+  font-weight: bold;
+  text-indent: -999px;
+  overflow: hidden;
+  width: 3em;
+  position: relative;
+
+  &:before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    content: '';
+    background-color: red;
+    display: block;
+    width: 50%;
+    height: 13%;    
+  }
+}
+
+.vzi-motive {
+  margin-right: auto;
+}
+
+.vzi-reset__label {
+}

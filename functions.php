@@ -47,7 +47,7 @@ function vzi_create_database_table() {
     product_id mediumint(9) NOT NULL,
     user_id mediumint(9) NOT NULL,
     date_created datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-    motive varchar(255) DEFAULT 'set' NOT NULL,
+    motive varchar(255) DEFAULT 'inventory' NOT NULL,
     quantity int(11) DEFAULT 0 NOT NULL,
     PRIMARY KEY  (id)
   ) $charset_collate;";
@@ -79,8 +79,30 @@ function vzi_add_product_meta_box() {
   );
 }
 
+function vzi_product_log($sku, $zone, $quantity, $inventory = false) {
+  global $wpdb;
+  $table_name = $wpdb->prefix . 'vzi_zone_logs';
+  $user_id = get_current_user_id();
+  $zone_id = $zone->ID;
+  $product_id = vzi_get_product_id($sku);
+  $motive = 'set';
+  if ($inventory) {
+    $motive = 'inventory';
+  }
+  $wpdb->insert(
+    $table_name,
+    [
+      'zone_id' => $zone_id,
+      'product_id' => $product_id,
+      'user_id' => $user_id,
+      'date_created' => current_time('mysql'),
+      'motive' => $motive,
+      'quantity' => $quantity,
+    ]
+  );
+}
 
-function vzi_add_product_to_zone($isku, $zone_id, $product_title = null) {
+function vzi_add_product_to_zone($isku, $zone_id, $quantity = 1, $product_title = null) {
   $sku = sanitize_text_field(strtoupper(str_replace(' ', '', $isku)));
   $found_products = get_posts([
     'post_type' => 'product',
@@ -91,27 +113,9 @@ function vzi_add_product_to_zone($isku, $zone_id, $product_title = null) {
     'post_status' => get_post_types('', 'names'),
   ]);
   if ($found_products) {
-    $product_id = $found_products[0];
-    $product_zones = get_post_meta($zone_id, 'vzi_products_in_zone', true);
-    if (!$product_zones) {
-      $product_zones = [];
-    }
-    if (!in_array($product_id, $product_zones)) {
-      $product_zones[] = $product_id;
-      update_post_meta($zone_id, 'vzi_products_in_zone', $product_zones);
-    }
-    $title = get_the_title($product_id);
-    if ($product_title !== '' && $product_title !== null) {
-      $title = $product_title;
-    }
-    $update = wp_update_post([
-      'ID' => $product_id,
-      'post_title' => $title,
-    ]);
-    $result = $product_id;
+    vzi_product_log($sku, $zone_id, $quantity, true);
   } else {
     $product = new WC_Product_Simple();
-    // $product->set_name($sku);
     if ($product_title !== '' && $product_title !== null) {
       $product->set_name($product_title);
     } else {
@@ -120,16 +124,9 @@ function vzi_add_product_to_zone($isku, $zone_id, $product_title = null) {
     $product->set_sku($sku);
     $product->set_status('draft');
     $product_id = $product->save();
-    $product_zones = get_post_meta($zone_id, 'vzi_products_in_zone', true);
-    if (!$product_zones) {
-      $product_zones = [$product_id];
-    } else {
-      $product_zones[] = $product_id;
-    }
-    update_post_meta($zone_id, 'vzi_products_in_zone', $product_zones);
+    vzi_product_log($sku, $zone_id, $quantity, true);
     $result = $product_id;
   }
-
   return $result;
 }
 

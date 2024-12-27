@@ -21,7 +21,7 @@ function ZoneArchive () {
   const [srcUrl, setSrcUrl] = useState('');
   const [productInputMode, setProductInputMode] = useState('numeric');
   const productTitleInputRef = useRef(null);
-
+  const [isInventory, setIsInventory] = useState(false);
 
   function setSelectedZone(zone) {
     setSelectedZoneVariable(zone);
@@ -94,11 +94,12 @@ function ZoneArchive () {
     e.preventDefault();
     setLoading(true);
     try {
-      const sku = selectedProduct.sku;
       const result = await api.post(`product/${selectedProduct.id}`, { 
-        sku,
+        sku: selectedProduct.sku,
         title: selectedProduct.title,
         zone_id: parentId,
+        quantity: selectedProduct.quantity,
+        inventory: isInventory,
        });
        if (result.data.error) {
          console.error(result.data.error);
@@ -124,7 +125,6 @@ function ZoneArchive () {
       console.error(error);
       setLoading(false);
     }
-    
   }
 
   function handleselectedProductSku(e) {
@@ -156,6 +156,8 @@ function ZoneArchive () {
       id: 'new',
       post_title: '',
       sku: '',
+      quantity: 1,
+      inventory: true,
     };
     setSelectedProduct(exampleProduct);
   }
@@ -398,18 +400,46 @@ function ZoneArchive () {
     }
   }
 
+  function addQuantityProduct(e) {
+    e.preventDefault();
+    const nSelectedProduct = {
+      ...selectedProduct,
+      quantity: parseInt(selectedProduct.quantity) + 1,
+    }
+    setSelectedProduct(nSelectedProduct);
+  }
+
+  function subtractQuantityProduct(e) {
+    e.preventDefault();
+    const nSelectedProduct = {
+      ...selectedProduct,
+      quantity: selectedProduct.quantity - 1,
+    }
+    setSelectedProduct(nSelectedProduct);
+  }
+
+  function handleSelectedProductQuantity(e) {
+    e.preventDefault();
+    const quantity = parseFloat(e.target.value);
+    const nSelectedProduct = {
+      ...selectedProduct,
+      quantity,
+    }
+    setSelectedProduct(nSelectedProduct); 
+  }
+
   return (
     <section className='vzi-zone-archive'>
       { loading && (
           <div className="vzi-loader">
             <p>
-              Loading...
+              {__('loading')}
             </p>
           </div>
       )}
       <ul className="vzi-breadcrumb-list">
         <li>
-        <a href={getZoneLink('home')}>Home</a>
+        <a href={getZoneLink('home')}> {__('Home')} </a>
         </li>
         {
           breadcrum.map((item, index) => (
@@ -419,7 +449,7 @@ function ZoneArchive () {
           ))
         }
       </ul>
-      <h2>{ parentZoneTitle || 'Home' }</h2>
+      <h2>{ parentZoneTitle || __('Home') }</h2>
       <section className="vzi-zone-archive__form__wrapper">
         <div className="vzi-archive__actions">
           <button className="vzi-button add-zone"
@@ -490,15 +520,23 @@ function ZoneArchive () {
         {selectedProduct && (
           <form onSubmit={(e) => handleProductUpdate(e)} 
                 className="vzi-zone-archive__form">
-            <p className="vzi-form__title">
-              {selectedProduct.id === 'new' ? __('add-product') : __('edit-product') }
-            </p>
+            <div className='vzi-zone-archive__form__header'>
+              <p className="vzi-form__title">
+                {selectedProduct.id === 'new' ? __('add-product') : __('edit-product') }
+              </p>
+              <button
+                  className="vzi-button vzi-zone-archive__cancel"
+                  type="button"
+                  onClick={() => setSelectedProduct(null)}>
+                Cancel
+              </button>
+            </div>
             <div className="vzi-form__container">
               <label className="vzi-form__input__label">
                 <p> {__('product-title')} </p>
               <input type="text"
                       name="name"
-                      className="vzi-form__input"
+                      className="vzi-form__input vz-fill"
                       ref={productTitleInputRef}
                       onChange={(e) => handleselectedProductTitle(e)}
                       value={selectedProduct.title} />
@@ -509,8 +547,8 @@ function ZoneArchive () {
                 <p> {__('product-sku')} </p>
                 <input type="text"
                       name="sku"
-                      className="vzi-form__input"
-                      inputmode={productInputMode}
+                      className="vzi-form__input vz-fill"
+                      inputMode={productInputMode}
                       ref={productInputRef}
                       onChange={(e) => handleselectedProductSku(e)}
                       value={selectedProduct.sku} />
@@ -529,57 +567,42 @@ function ZoneArchive () {
             <div className="vzi-form__container">
               <label>
                 <p> {__('Add')} </p>
-                <button>
+                <button onClick={(e) => addQuantityProduct(e)} 
+                        className="vzi-button vzi-add">
                   <VzIcon icon="add" />
                 </button>
               </label>
               <label>
                 <p> {__('Quantity')} </p>
                 <input type="number"
-                      name="quantity"
-                      className="vzi-form__input" />
+                       step="0.01"
+                       name="quantity"
+                       onChange={(e) => handleSelectedProductQuantity(e)}
+                       value={selectedProduct.quantity || 1}
+                       className="vzi-form__input vzi-quantity" />
               </label>
               
               <label>
-                <p> {__('Subtract')} </p>
-                <button>
-                  -
+                <p> {__('Remove')} </p>
+                <button className="vzi-button vzi-subtract" 
+                        onClick={(e) => subtractQuantityProduct(e)} >
+                  {__("Remove")}
                 </button>
-              </label>
-              <label>
-                <p> {__('reset-label')} </p>
-                <button>
-                  {__('reset-button')}
-                </button>
-              </label>
-              <label>
-                <p> {__('motive')} </p>
-                <select>
-                  <option> {__('motive-sell')} </option>
-                  <option> {__('motive-inventory')} </option>
-                  <option> {__('motive-entry')} </option>
-                </select>
               </label>
             </div>
 
 
             <div className="vzi-form__actions">
               {selectedProduct.id !== 'new' && (
-                <button type="button"
-                        className="vzi-button vzi-zone-archive__delete"
-                        onClick={() => deleteProduct()}>
-                  <VzIcon icon="delete" />
-                  <span className="text-indented">
-                    Delete
-                  </span>
-                </button>
+                <label className="vzi-motive">
+                  <input type="checkbox"
+                        name="inventory"
+                        checked={isInventory}
+                        onChange={(e) => setIsInventory(e.target.checked)} />
+                  <span> {__('Inventory')} </span>
+                </label>
               )}
-              <button
-                  className="vzi-button vzi-zone-archive__cancel"
-                  type="button"
-                  onClick={() => setSelectedProduct(null)}>
-                Cancel
-              </button>
+             
               <button type="submit"
                       className="vzi-button vzi-zone-archive__save">
                 Save
@@ -615,9 +638,7 @@ function ZoneArchive () {
         { zones.length === 0 && (
             <li className="vzi-no-results">
               <article className="vzi-no-results__card">
-                
-                  No Zones
-                
+                No Zones
               </article>
             </li>
           )}
