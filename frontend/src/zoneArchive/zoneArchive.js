@@ -491,8 +491,19 @@ function ZoneArchive () {
           <form onSubmit={(e) => handleProductUpdate(e)} 
                 className="vzi-zone-archive__form">
             <p className="vzi-form__title">
-              {selectedProduct.id === 'new' ? 'Add' : 'Edit' } Product SKU
+              {selectedProduct.id === 'new' ? __('add-product') : __('edit-product') }
             </p>
+            <div className="vzi-form__container">
+              <label className="vzi-form__input__label">
+                <p> {__('product-title')} </p>
+              <input type="text"
+                      name="name"
+                      className="vzi-form__input"
+                      ref={productTitleInputRef}
+                      onChange={(e) => handleselectedProductTitle(e)}
+                      value={selectedProduct.title} />
+              </label>
+            </div>
             <div className="vzi-form__container">
               <label className="vzi-form__input__label">
                 <p> {__('product-sku')} </p>
@@ -514,17 +525,44 @@ function ZoneArchive () {
                 </button>
               </label>
             </div>
+
             <div className="vzi-form__container">
-              <label className="vzi-form__input__label">
-                <p> {__('product-title')} </p>
-              <input type="text"
-                      name="name"
-                      className="vzi-form__input"
-                      ref={productTitleInputRef}
-                      onChange={(e) => handleselectedProductTitle(e)}
-                      value={selectedProduct.title} />
+              <label>
+                <p> {__('Add')} </p>
+                <button>
+                  <VzIcon icon="add" />
+                </button>
+              </label>
+              <label>
+                <p> {__('Quantity')} </p>
+                <input type="number"
+                      name="quantity"
+                      className="vzi-form__input" />
+              </label>
+              
+              <label>
+                <p> {__('Subtract')} </p>
+                <button>
+                  -
+                </button>
+              </label>
+              <label>
+                <p> {__('reset-label')} </p>
+                <button>
+                  {__('reset-button')}
+                </button>
+              </label>
+              <label>
+                <p> {__('motive')} </p>
+                <select>
+                  <option> {__('motive-sell')} </option>
+                  <option> {__('motive-inventory')} </option>
+                  <option> {__('motive-entry')} </option>
+                </select>
               </label>
             </div>
+
+
             <div className="vzi-form__actions">
               {selectedProduct.id !== 'new' && (
                 <button type="button"
