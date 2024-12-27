@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, use } from 'react';
-import { _vz } from '../translations';
+import { __ } from '../translations';
 import './zoneArchive.scss';
 // import api from '../api';	
 import axios from 'axios';
@@ -20,6 +20,8 @@ function ZoneArchive () {
   const [restUrl, setRestUrl] = useState(null);
   const [srcUrl, setSrcUrl] = useState('');
   const [productInputMode, setProductInputMode] = useState('numeric');
+  const productTitleInputRef = useRef(null);
+
 
   function setSelectedZone(zone) {
     setSelectedZoneVariable(zone);
@@ -95,6 +97,7 @@ function ZoneArchive () {
       const sku = selectedProduct.sku;
       const result = await api.post(`product/${selectedProduct.id}`, { 
         sku,
+        title: selectedProduct.title,
         zone_id: parentId,
        });
        if (result.data.error) {
@@ -129,6 +132,15 @@ function ZoneArchive () {
     const nselectedProduct = {
       ...selectedProduct,
       sku: e.target.value,
+    }
+    setSelectedProduct(nselectedProduct);
+  }
+
+  function handleselectedProductTitle(e) {
+    e.preventDefault();
+    const nselectedProduct = {
+      ...selectedProduct,
+      title: e.target.value,
     }
     setSelectedProduct(nselectedProduct);
   }
@@ -184,19 +196,6 @@ function ZoneArchive () {
     const nSelected = zones.find(zone => zone.id === zoneId);
     setSelectedZone(nSelected);
   }
-
-  useEffect(() => {
-    // Focus the input element when selectedZone changes
-    if (selectedZone && zoneInputRef.current) {
-      zoneInputRef.current.focus();
-    }
-
-    if (selectedProduct && productInputRef.current) {
-      productInputRef.current.focus();
-    }
-
-  }, [selectedZone, selectedProduct]);
-
 
   useEffect(() => {
     if(window.vz_app_params) {
@@ -307,7 +306,7 @@ function ZoneArchive () {
   }
 
   async function deleteZone(zoneId) {
-    if (!window.confirm(_vz('zone-delete-confirm'))) {
+    if (!window.confirm(__('zone-delete-confirm'))) {
       return;
     }
     setLoading(true);
@@ -335,7 +334,7 @@ function ZoneArchive () {
   }
 
   async function deleteProduct() {
-    if (!window.confirm(_vz('product-delete-confirm'))) {
+    if (!window.confirm(__('product-delete-confirm'))) {
       return;
     }
     setLoading(true);
@@ -440,7 +439,7 @@ function ZoneArchive () {
           <form onSubmit={(e) => handleZoneUpdate(e)} 
                 className="vzi-zone-archive__form">
             <p className="vzi-form__title">
-              { selectedZone.id === 'new' ? 'Add' : 'Edit' } Zone
+              { selectedZone.id === 'new' ? __('new-zone') : __('edit-zone') } Zone
             </p>
             <div className="vzi-form__container">                
               
@@ -492,10 +491,42 @@ function ZoneArchive () {
           <form onSubmit={(e) => handleProductUpdate(e)} 
                 className="vzi-zone-archive__form">
             <p className="vzi-form__title">
-              { selectedProduct.id === 'new' ? 'Add' : 'Edit' } Product SKU
+              {selectedProduct.id === 'new' ? 'Add' : 'Edit' } Product SKU
             </p>
             <div className="vzi-form__container">
-              { selectedProduct.id !== 'new' && (
+              <label className="vzi-form__input__label">
+                <p> {__('product-sku')} </p>
+                <input type="text"
+                      name="sku"
+                      className="vzi-form__input"
+                      inputmode={productInputMode}
+                      ref={productInputRef}
+                      onChange={(e) => handleselectedProductSku(e)}
+                      value={selectedProduct.sku} />
+              </label>
+              <label>
+                <p> {__('mode')} </p>
+                <button 
+                  type="button"
+                  onClick={() => toggleInputMode()}
+                  className="vz-button vzi-zone-archive__change-mode">
+                  { productInputMode === 'numeric' ? 'a-Z' : '0-9'}
+                </button>
+              </label>
+            </div>
+            <div className="vzi-form__container">
+              <label className="vzi-form__input__label">
+                <p> {__('product-title')} </p>
+              <input type="text"
+                      name="name"
+                      className="vzi-form__input"
+                      ref={productTitleInputRef}
+                      onChange={(e) => handleselectedProductTitle(e)}
+                      value={selectedProduct.title} />
+              </label>
+            </div>
+            <div className="vzi-form__actions">
+              {selectedProduct.id !== 'new' && (
                 <button type="button"
                         className="vzi-button vzi-zone-archive__delete"
                         onClick={() => deleteProduct()}>
@@ -504,26 +535,12 @@ function ZoneArchive () {
                     Delete
                   </span>
                 </button>
-                )}
+              )}
               <button
                   className="vzi-button vzi-zone-archive__cancel"
                   type="button"
                   onClick={() => setSelectedProduct(null)}>
                 Cancel
-              </button>
-              <label>
-                <input type="text"
-                      name="sku"
-                      inputmode={productInputMode}
-                      ref={productInputRef}
-                      onChange={(e) => handleselectedProductSku(e)}
-                      value={selectedProduct.sku} />
-              </label>
-              <button 
-                type="button"
-                onClick={() => toggleInputMode()}
-                className="vz-button vzi-zone-archive__change-mode">
-                { productInputMode === 'numeric' ? 'a-Z' : '0-9'}
               </button>
               <button type="submit"
                       className="vzi-button vzi-zone-archive__save">
@@ -575,8 +592,7 @@ function ZoneArchive () {
             </article>
           </li>
         )}
-        {
-          products.map(product => (
+        { products.map(product => (
             <li key={product.id}>
               <article className="vzi-product__card">
                 <button className="vzi-product__card__details"
@@ -598,8 +614,7 @@ function ZoneArchive () {
                 </div>
               </article>
             </li>
-          ))
-        }
+          ))}
       </ul>
     </section>
   );

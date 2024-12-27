@@ -88,6 +88,7 @@
     display: flex;
     gap: 0.5em;
     width: 100%;
+    margin-bottom: 0.5em;
   }
   label {
     p {
@@ -119,16 +120,16 @@
   }
 
   .vzi-zone-archive__delete {
-    padding-left: 0;
-    padding-right: 0;
-    color: black;
     background-color: transparent;
     margin-right: auto;
-    .text-indented {
-      display: none;
-    }
+    color: red;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid red;
     .icon {
       display: inline-block;
+      position: relative;
+      top: -0.4em;
       img {
         width: auto;
         height: 1.5em;
@@ -164,20 +165,23 @@
 
 
 .vzi-zone-archive__save {
-
+  width: 8em;
+  text-align: center;
+  justify-content: center;
 }
 
 .vzi-zone-archive__change-mode {
   background-color: transparent;
   border: none;
   color: #333;
-  width: min-content;
+  width: 4em;
   border: 1px solid #ccc;
   border-radius: 0.25em;
   cursor: pointer;
   text-align: center;
   font-weight: bold;
   text-wrap: nowrap;
+  padding: 0.7em;
 }
 
 .vzi-zone__card {

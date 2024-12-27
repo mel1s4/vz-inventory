@@ -37,6 +37,24 @@ function vzi_load_init_file() {
   include 'init.php';
 }
 
+function vzi_create_database_table() {
+  global $wpdb;
+  $table_name = $wpdb->prefix . 'vzi_zone_logs';
+  $charset_collate = $wpdb->get_charset_collate();
+  $sql = "CREATE TABLE $table_name (
+    id mediumint(9) NOT NULL AUTO_INCREMENT,
+    zone_id mediumint(9) NOT NULL,
+    product_id mediumint(9) NOT NULL,
+    user_id mediumint(9) NOT NULL,
+    date_created datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+    motive varchar(255) DEFAULT 'set' NOT NULL,
+    quantity int(11) DEFAULT 0 NOT NULL,
+    PRIMARY KEY  (id)
+  ) $charset_collate;";
+  require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+  dbDelta($sql);
+}
+
 
 // localhost dev CORS
 if ($_SERVER['HTTP_HOST'] == 'localhost') {
@@ -62,7 +80,7 @@ function vzi_add_product_meta_box() {
 }
 
 
-function vzi_add_product_to_zone($isku, $zone_id) {
+function vzi_add_product_to_zone($isku, $zone_id, $product_title = null) {
   $sku = sanitize_text_field(strtoupper(str_replace(' ', '', $isku)));
   $found_products = get_posts([
     'post_type' => 'product',
@@ -82,10 +100,23 @@ function vzi_add_product_to_zone($isku, $zone_id) {
       $product_zones[] = $product_id;
       update_post_meta($zone_id, 'vzi_products_in_zone', $product_zones);
     }
+    $title = get_the_title($product_id);
+    if ($product_title !== '' && $product_title !== null) {
+      $title = $product_title;
+    }
+    $update = wp_update_post([
+      'ID' => $product_id,
+      'post_title' => $title,
+    ]);
     $result = $product_id;
   } else {
     $product = new WC_Product_Simple();
-    $product->set_name($sku);
+    // $product->set_name($sku);
+    if ($product_title !== '' && $product_title !== null) {
+      $product->set_name($product_title);
+    } else {
+      $product->set_name($sku);
+    }
     $product->set_sku($sku);
     $product->set_status('draft');
     $product_id = $product->save();

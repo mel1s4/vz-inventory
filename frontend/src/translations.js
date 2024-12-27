@@ -5,7 +5,7 @@ const lang = () => {
   return lan.substring(0, 2);
 }
 
-export const _vz = (key) => {
+export const __ = (key) => {
   if (strings[key] === undefined) {
     console.log('Translation not found:', key);
     return key;

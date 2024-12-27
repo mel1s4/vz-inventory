@@ -1,8 +1,5 @@
 <?php 
 
-
-// create a custom post type called zones
-// get from option
 $zones_slug = get_option('vz_zones_slug', 'zones');
 register_post_type('vzi-zones', [
   'labels' => [
@@ -20,3 +17,4 @@ register_post_type('vzi-zones', [
 ]);
 
 
+vzi_create_database_table();

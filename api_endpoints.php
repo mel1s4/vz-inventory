@@ -83,13 +83,14 @@ function vzi_update_product($data) {
 
   $sku = $data['sku'];
   $id = $data['id'];
+  $title = $data['title'];
   $result = false;
 
   if ($id == 'new') {
-    $result = vzi_add_product_to_zone($sku, $zone_id);
+    $result = vzi_add_product_to_zone($sku, $zone_id, $title);
   } else {
     if ( vzi_remove_product_from_zone($id, $zone_id) ) {
-      $result = vzi_add_product_to_zone($sku, $zone_id);
+      $result = vzi_add_product_to_zone($sku, $zone_id, $title);
     } else {
       return rest_ensure_response([
         'error' => 'Product not found in zone',
