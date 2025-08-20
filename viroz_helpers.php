@@ -10,7 +10,7 @@ if (!function_exists('print_x')) {
 
 if (!function_exists('vz_html')) {
   function vz_html($tag, $text) {
-    $txt = __($text, 'vzi');
+    $txt = __($text, VZI_TEXT_DOMAIN);
     echo "<$tag>$txt</$tag>";
   }
 }
@@ -23,6 +23,6 @@ if (!function_exists('e_vz'))  {
 
 if (!function_exists('__vz')) {
   function __vz($text) {
-    return __($text, 'vzi');
+    return __($text, VZI_TEXT_DOMAIN);
   }
 }

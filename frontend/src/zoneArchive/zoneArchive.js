@@ -1,11 +1,13 @@
-import React, { useState, useEffect, useRef, use } from 'react';
-import { _vz } from '../translations';
+import React, { useState, useEffect, useRef } from 'react';
+import { t } from '../utils/i18n';
 import './zoneArchive.scss';
 // import api from '../api';	
 import axios from 'axios';
+import Icon from '../components/Icon/Icon';
 
 function ZoneArchive () {
-  const devEnv = true;
+  // Only use dev environment if actually running on localhost AND no WordPress params available
+  const devEnv = window.location.hostname === 'localhost' && !window.vz_app_params;
   const [zones, setZones] = useState([]);
   const [selectedZone, setSelectedZoneVariable] = useState(null);
   const productInputRef = useRef(null);
@@ -18,7 +20,6 @@ function ZoneArchive () {
   const [loading, setLoading] = useState(false);
   const [restNonce, setRestNonce] = useState('');
   const [restUrl, setRestUrl] = useState(null);
-  const [srcUrl, setSrcUrl] = useState('');
   const [productInputMode, setProductInputMode] = useState('numeric');
 
   function setSelectedZone(zone) {
@@ -81,9 +82,7 @@ function ZoneArchive () {
   function VzIcon({icon='edit'}) {
     return (
       <span className="icon">
-        <img src={
-          `${srcUrl}/icons/icon_${icon}.svg`
-        } alt={icon} />
+        <Icon icon={icon} />
       </span>
     );
   }
@@ -152,7 +151,7 @@ function ZoneArchive () {
     const exampleZone = {
       id: 'new',
       post_title: '',
-      color: '#000000',
+      color: '#ffffff',
     };
     setSelectedZone(exampleZone);
   }
@@ -209,7 +208,6 @@ function ZoneArchive () {
         setBreadcrum(window.vz_app_params.results.breadcrumb);
         setParentZoneTitle(window.vz_app_params.results.title);
         setParentId(window.vz_app_params.results.parent_id);
-        setSrcUrl(window.vz_app_params.src_url);
       }
       // get parent id from the URL
       const urlParams = new URLSearchParams(window.location.search);
@@ -307,7 +305,7 @@ function ZoneArchive () {
   }
 
   async function deleteZone(zoneId) {
-    if (!window.confirm(_vz('zone-delete-confirm'))) {
+    if (!window.confirm(t('Are you sure you want to delete this zone?'))) {
       return;
     }
     setLoading(true);
@@ -335,7 +333,7 @@ function ZoneArchive () {
   }
 
   async function deleteProduct() {
-    if (!window.confirm(_vz('product-delete-confirm'))) {
+    if (!window.confirm(t('Are you sure you want to delete this product?'))) {
       return;
     }
     setLoading(true);
@@ -365,52 +363,20 @@ function ZoneArchive () {
     setProductInputMode(productInputMode === 'numeric' ? 'text' : 'numeric');
   }
 
-  function contrastColor(hexcolor) {
-    const r = parseInt(hexcolor.substr(1, 2), 16);
-    const g = parseInt(hexcolor.substr(3, 2), 16);
-    const b = parseInt(hexcolor.substr(5, 2), 16);
-    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-    return (yiq >= 150) ? true : false;
-  }
 
-  function darken(color, percent) {
-    const num = parseInt(color.slice(1), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = (num >> 16) - amt;
-    const B = (num >> 8 & 0x00FF) - amt;
-    const G = (num & 0x0000FF) - amt;
-    return `#${(0x1000000 + (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 + (B < 255 ? (B < 1 ? 0 : B) : 255) * 0x100 + (G < 255 ? (G < 1 ? 0 : G) : 255)).toString(16).slice(1)}`;
-  }
-
-  function lighten(color, percent) {  
-    const num = parseInt(color.slice(1), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = (num >> 16) + amt;
-    const B = (num >> 8 & 0x00FF) + amt;
-    const G = (num & 0x0000FF) + amt;
-    return `#${(0x1000000 + (R > 255 ? 255 : R) * 0x10000 + (B > 255 ? 255 : B) * 0x100 + (G > 255 ? 255 : G)).toString(16).slice(1)}`;
-  }
-
-  function setColors(color) {
-    return {
-      backgroundColor: color,
-      color: contrastColor(color) ? darken(color, 80) : lighten(color, 60),
-      borderColor: darken(color, 20),
-    }
-  }
 
   return (
     <section className='vzi-zone-archive'>
       { loading && (
           <div className="vzi-loader">
             <p>
-              Loading...
+              {t('Loading...')}
             </p>
           </div>
       )}
       <ul className="vzi-breadcrumb-list">
         <li>
-        <a href={getZoneLink('home')}>Home</a>
+        <a href={getZoneLink('home')}>{t('Home')}</a>
         </li>
         {
           breadcrum.map((item, index) => (
@@ -420,19 +386,19 @@ function ZoneArchive () {
           ))
         }
       </ul>
-      <h2>{ parentZoneTitle || 'Home' }</h2>
-      <section className="vzi-zone-archive__form__wrapper">
+      <h2>{ parentZoneTitle || t('Home') }</h2>
+      <section className="vzi-zone-archive__form-wrapper">
         <div className="vzi-archive__actions">
-          <button className="vzi-button add-zone"
+          <button className="vzi-button --add-zone"
                   onClick={addZone}>
             <VzIcon icon="add" />
-              Zone
+              {t('Zone')}
           </button>
           { (parentId > 0) && (
-            <button className="vzi-button add-product"
+            <button className="vzi-button --add-product"
                     onClick={addProduct}>
               <VzIcon icon="add_white" />
-              Product
+              {t('Product')}
             </button>
           )}
         </div>
@@ -440,12 +406,12 @@ function ZoneArchive () {
           <form onSubmit={(e) => handleZoneUpdate(e)} 
                 className="vzi-zone-archive__form">
             <p className="vzi-form__title">
-              { selectedZone.id === 'new' ? 'Add' : 'Edit' } Zone
+              { selectedZone.id === 'new' ? t('Add') : t('Edit') } {t('Zone')}
             </p>
             <div className="vzi-form__container">                
               
 
-              <label className="vzi-form__input__label">
+              <label className="vzi-form__input-label">
                 <input type="text" 
                       className="vzi-form__input"
                       name="name"
@@ -466,24 +432,24 @@ function ZoneArchive () {
             <div className="vzi-form__actions">
               {selectedZone.id !== 'new' && (
                 <button type="button"
-                        className="vzi-button vzi-zone-archive__delete"
+                        className="vzi-button --delete"
                         onClick={() => deleteZone(selectedZone.id)}>
                   <VzIcon icon="delete" />
                   <span className="text-indented">
-                    Delete
+                    {t('Delete')}
                   </span>
                 </button>
               )}
               <button
-                  className="vzi-button vzi-zone-archive__cancel"
+                  className="vzi-button --cancel"
                   type="button"
                   onClick={() => setSelectedZone(null)}>
-                Cancel
+                {t('Cancel')}
               </button>
               
               <button type="submit"
-                      className="vzi-button vzi-zone-archive__save">
-                Save
+                      className="vzi-button --save">
+                {t('Save')}
               </button>
             </div>
           </form>
@@ -492,24 +458,24 @@ function ZoneArchive () {
           <form onSubmit={(e) => handleProductUpdate(e)} 
                 className="vzi-zone-archive__form">
             <p className="vzi-form__title">
-              { selectedProduct.id === 'new' ? 'Add' : 'Edit' } Product SKU
+              { selectedProduct.id === 'new' ? t('Add') : t('Edit') } {t('Product SKU')}
             </p>
             <div className="vzi-form__container">
               { selectedProduct.id !== 'new' && (
                 <button type="button"
-                        className="vzi-button vzi-zone-archive__delete"
+                        className="vzi-button --delete"
                         onClick={() => deleteProduct()}>
                   <VzIcon icon="delete" />
                   <span className="text-indented">
-                    Delete
+                    {t('Delete')}
                   </span>
                 </button>
                 )}
               <button
-                  className="vzi-button vzi-zone-archive__cancel"
+                  className="vzi-button --cancel"
                   type="button"
                   onClick={() => setSelectedProduct(null)}>
-                Cancel
+                {t('Cancel')}
               </button>
               <label>
                 <input type="text"
@@ -522,12 +488,12 @@ function ZoneArchive () {
               <button 
                 type="button"
                 onClick={() => toggleInputMode()}
-                className="vz-button vzi-zone-archive__change-mode">
+                className="vzi-button --change-mode">
                 { productInputMode === 'numeric' ? 'a-Z' : '0-9'}
               </button>
               <button type="submit"
-                      className="vzi-button vzi-zone-archive__save">
-                Save
+                      className="vzi-button --save">
+                {t('Save')}
               </button>
             </div>
           </form>
@@ -538,19 +504,22 @@ function ZoneArchive () {
           zones.map(zone => (
             <li key={zone.id}
                 className={ selectedZone && selectedZone.id === zone.id ? '--selected' : ''}>
-              <article className="vzi-zone__card"
-                       style={setColors(zone.color)}>
+              <article className="vzi-zone__card">
                 <a className="vzi-zone-archive__zone"
                     href={getZoneLink(zone.id)}>
-                  {
-                    zone.post_title || 'New Zone'	
-                  } 
+                  <div 
+                    className={`vzi-zone__color-indicator ${zone.color && zone.color !== '#ffffff' ? '--has-color' : ''}`}
+                    style={{ backgroundColor: zone.color || '#ffffff' }}
+                  ></div>
+                  <span className="vzi-zone__name">
+                    {zone.post_title || t('New Zone')}
+                  </span>
                 </a>
                 <button className="vzi-button-edit-zone"
                         onClick={(e) => editZone(e, zone.id)}>
                   <VzIcon />
                   <span className="text-indented">
-                    Edit
+                    {t('Edit')}
                   </span>
                 </button>
               </article>
@@ -561,7 +530,7 @@ function ZoneArchive () {
             <li className="vzi-no-results">
               <article className="vzi-no-results__card">
                 
-                  No Zones
+                  {t('No Zones')}
                 
               </article>
             </li>
@@ -571,7 +540,7 @@ function ZoneArchive () {
         {(parentId > 0 && products.length === 0) && (
           <li className="vzi-no-results">
             <article className="vzi-no-results__card">
-              No Products
+              {t('No Products')}
             </article>
           </li>
         )}
@@ -582,18 +551,19 @@ function ZoneArchive () {
                 <button className="vzi-product__card__details"
                       onClick={(e) => editProduct(product.id)}>
                   <p className="sku">
-                    { product.sku || 'No SKU' }
+                    { product.sku || t('No SKU') }
                   </p>
                   <p className="name">
-                    { product.title || 'New Product'	}
+                    { product.title || t('New Product')	}
                   </p>
                 </button>
                 <div className="vzi-product__card__actions">
                   <a className="vzi-button-visit-product"
                           target="_blank"
+                          rel="noreferrer"
                           href={productLink(product.id)}>
                     <VzIcon icon="visit" />
-                    <span className="text-indented">Edit in WordPress</span>
+                    <span className="text-indented">{t('Edit in WordPress')}</span>
                   </a>
                 </div>
               </article>

@@ -144,11 +144,12 @@ function vzi_get_zones($data) {
 
   $zones_filtered = [];
   foreach ($zones as $zone) {
+    $saved_color = get_post_meta($zone->ID, 'vzi_zone_color', true);
     $zones_filtered[] = [
       'id' => $zone->ID,
       'post_title' => $zone->post_title,
       'parent_id' => $zone->post_parent,
-      'color' => get_post_meta($zone->ID, 'vzi_zone_color', true),
+      'color' => $saved_color ?: '#ffffff', // Default to white if no color is saved
     ];
   }
 
@@ -203,7 +204,8 @@ function vzi_create_zone($data) {
 function vzi_update_zone($data) {
   $id = $data['id'];
   $title = $data['post_title'];
-  $color = $data['color'];
+  $color = isset($data['color']) ? $data['color'] : '#ffffff'; // Default to white if no color provided
+  
   if ( $id === 'new') {
     $parent_id = $data['parent_id'] ? $data['parent_id'] : 0;
     $zone = [

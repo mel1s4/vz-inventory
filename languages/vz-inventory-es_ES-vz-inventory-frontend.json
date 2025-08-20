@@ -1,0 +1,79 @@
+{
+  "domain": "messages",
+  "locale_data": {
+    "messages": {
+      "": {
+        "domain": "messages",
+        "plural_forms": "nplurals=2; plural=(n != 1);",
+        "lang": "es_ES"
+      },
+      "Are you sure you want to delete this zone?": [
+        "¿Estás seguro de que quieres eliminar esta zona?"
+      ],
+      "Are you sure you want to delete this product?": [
+        "¿Estás seguro de que quieres eliminar este producto?"
+      ],
+      "Home": [
+        "Inicio"
+      ],
+      "Zone": [
+        "Zona"
+      ],
+      "Product": [
+        "Producto"
+      ],
+      "Add": [
+        "Agregar"
+      ],
+      "Edit": [
+        "Editar"
+      ],
+      "Product SKU": [
+        "SKU del Producto"
+      ],
+      "Delete": [
+        "Eliminar"
+      ],
+      "Cancel": [
+        "Cancelar"
+      ],
+      "Save": [
+        "Guardar"
+      ],
+      "Edit in WordPress": [
+        "Editar en WordPress"
+      ],
+      "New Zone": [
+        "Nueva Zona"
+      ],
+      "No Zones": [
+        "Sin Zonas"
+      ],
+      "No Products": [
+        "Sin Productos"
+      ],
+      "No SKU": [
+        "Sin SKU"
+      ],
+      "New Product": [
+        "Nuevo Producto"
+      ],
+      "Loading...": [
+        "Cargando..."
+      ],
+      "Dark": [
+        "Oscuro"
+      ],
+      "Light": [
+        "Claro"
+      ],
+      "Switch to dark theme": [
+        "Cambiar a tema oscuro"
+      ],
+      "Switch to light theme": [
+        "Cambiar a tema claro"
+      ]
+    }
+  }
+}
+

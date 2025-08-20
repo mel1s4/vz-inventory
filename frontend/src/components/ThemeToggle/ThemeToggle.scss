@@ -1,0 +1,55 @@
+@import '../../styles/theme.scss';
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: space(2);
+  padding: space(2) space(3);
+  border: 1px solid var(--border-medium);
+  border-radius: radius(base);
+  background-color: var(--card-bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: font-size(sm);
+  font-weight: font-weight(medium);
+  
+  &:hover {
+    background-color: var(--hover-bg);
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+  }
+  
+  &:focus {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.theme-toggle__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: space(4);
+  height: space(4);
+  
+  svg {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.2s ease;
+  }
+}
+
+.theme-toggle__text {
+  font-size: inherit;
+  font-weight: inherit;
+  
+  @media (max-width: 480px) {
+    display: none;
+  }
+}
+
+.theme-toggle:hover .theme-toggle__icon svg {
+  transform: scale(1.1);
+}
+

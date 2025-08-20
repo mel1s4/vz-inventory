@@ -1,36 +1,141 @@
-body {
-  font-size: 16px;
-  * {
-    font-family: 'Roboto', sans-serif;
-    box-sizing: border-box;
-  }
+@import './styles/theme.scss';
+
+// Global styles
+* {
+  box-sizing: border-box;
 }
 
+html {
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: font-size(base);
+  line-height: map-get($line-heights, normal);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+// Base button component following BEM with theme system
 .vzi-button {
-  padding: 0.8em 1.2em;
-  border-radius: 0.25em;
-  border: none;
-  background-color: #093;
-  color: white;
-  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.5em;
-  .icon {
-    pointer-events: none;
-    height: 1em;
-    width: auto;
-    img {
-      height: 1em;
-      width: auto;
+  gap: space(2);
+  padding: space(3) space(4);
+  border-radius: radius(base);
+  border: 1px solid transparent;
+  background-color: var(--accent-primary);
+  color: var(--text-inverse);
+  font-size: font-size(sm);
+  font-weight: font-weight(medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  
+  &:hover {
+    background-color: var(--accent-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: shadow(sm);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+  
+  &:focus {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+  
+  &:disabled {
+    background-color: var(--text-disabled);
+    color: var(--text-inverse);
+    cursor: not-allowed;
+    opacity: 0.6;
+    
+    &:hover {
+      transform: none;
+      box-shadow: none;
     }
   }
 }
 
+// Button variants
+.vzi-button.--secondary {
+  background-color: var(--accent-secondary);
+  
+  &:hover {
+    background-color: var(--accent-secondary-hover);
+  }
+}
+
+.vzi-button.--outline {
+  background-color: transparent;
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  
+  &:hover {
+    background-color: var(--accent-primary);
+    color: var(--text-inverse);
+  }
+}
+
+.vzi-button.--ghost {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border-color: transparent;
+  
+  &:hover {
+    background-color: var(--hover-bg);
+    color: var(--text-primary);
+  }
+}
+
+// Icon within buttons
+.vzi-button .icon {
+  pointer-events: none;
+  height: space(4);
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  img {
+    height: 100%;
+    width: auto;
+  }
+  
+  svg {
+    height: 100%;
+    width: auto;
+  }
+}
+
+// Main app container - full width
 .vzi-app {
-  width: 500px;
-  margin: 0 auto;
-  max-width: 100vw;
-  max-height: 100vh;
-  padding: 1em;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  transition: background-color 0.2s ease;
+}
+
+.vzi-app__header {
+  display: flex;
+  justify-content: flex-end;
+  padding: space(4);
+  background-color: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: shadow(sm);
+  position: sticky;
+  top: 0;
+  z-index: z(sticky);
+}
+
+.vzi-app__theme-toggle {
+  // Component-specific overrides can be added here if needed
 }

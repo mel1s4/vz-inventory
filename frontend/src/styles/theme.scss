@@ -1,0 +1,352 @@
+// =================================
+// VZ INVENTORY THEME SYSTEM
+// =================================
+
+// Color Palette
+// Grayscale base with blue and magenta accents
+$colors: (
+  // Grayscale
+  white: #ffffff,
+  gray-50: #f8f9fa,
+  gray-100: #f1f3f4,
+  gray-200: #e8eaed,
+  gray-300: #dadce0,
+  gray-400: #bdc1c6,
+  gray-500: #9aa0a6,
+  gray-600: #5f6368,
+  gray-700: #3c4043,
+  gray-800: #202124,
+  gray-900: #1a1a1a,
+  black: #000000,
+  
+  // Blue accent
+  blue-50: #e8f0fe,
+  blue-100: #d2e3fc,
+  blue-200: #aecbfa,
+  blue-300: #8ab4f8,
+  blue-400: #669df6,
+  blue-500: #4285f4,
+  blue-600: #1a73e8,
+  blue-700: #1557b0,
+  blue-800: #0f4c81,
+  blue-900: #0a3d62,
+  
+  // Magenta accent
+  magenta-50: #fce8f3,
+  magenta-100: #f8d7e9,
+  magenta-200: #f2b3d9,
+  magenta-300: #ec8fc9,
+  magenta-400: #e66bb9,
+  magenta-500: #e047a9,
+  magenta-600: #d63384,
+  magenta-700: #b02a5b,
+  magenta-800: #8a2142,
+  magenta-900: #651829,
+  
+  // Semantic colors
+  success: #28a745,
+  warning: #ffc107,
+  error: #dc3545,
+  info: #17a2b8
+);
+
+// Theme configurations
+$light-theme: (
+  // Background colors
+  bg-primary: map-get($colors, white),
+  bg-secondary: map-get($colors, gray-50),
+  bg-tertiary: map-get($colors, gray-100),
+  bg-elevated: map-get($colors, white),
+  
+  // Text colors
+  text-primary: map-get($colors, gray-800),
+  text-secondary: map-get($colors, gray-600),
+  text-tertiary: map-get($colors, gray-500),
+  text-disabled: map-get($colors, gray-400),
+  text-inverse: map-get($colors, white),
+  
+  // Border colors
+  border-light: map-get($colors, gray-200),
+  border-medium: map-get($colors, gray-300),
+  border-strong: map-get($colors, gray-400),
+  
+  // Accent colors
+  accent-primary: map-get($colors, blue-600),
+  accent-primary-hover: map-get($colors, blue-700),
+  accent-secondary: map-get($colors, magenta-600),
+  accent-secondary-hover: map-get($colors, magenta-700),
+  
+  // Interactive states
+  hover-bg: map-get($colors, gray-100),
+  active-bg: map-get($colors, gray-200),
+  focus-ring: map-get($colors, blue-500),
+  
+  // Component backgrounds
+  card-bg: map-get($colors, white),
+  input-bg: map-get($colors, white),
+  overlay-bg: rgba(0, 0, 0, 0.5)
+);
+
+$dark-theme: (
+  // Background colors
+  bg-primary: map-get($colors, gray-900),
+  bg-secondary: map-get($colors, gray-800),
+  bg-tertiary: map-get($colors, gray-700),
+  bg-elevated: map-get($colors, gray-800),
+  
+  // Text colors
+  text-primary: map-get($colors, gray-100),
+  text-secondary: map-get($colors, gray-300),
+  text-tertiary: map-get($colors, gray-400),
+  text-disabled: map-get($colors, gray-500),
+  text-inverse: map-get($colors, gray-900),
+  
+  // Border colors
+  border-light: map-get($colors, gray-700),
+  border-medium: map-get($colors, gray-600),
+  border-strong: map-get($colors, gray-500),
+  
+  // Accent colors
+  accent-primary: map-get($colors, blue-400),
+  accent-primary-hover: map-get($colors, blue-300),
+  accent-secondary: map-get($colors, magenta-400),
+  accent-secondary-hover: map-get($colors, magenta-300),
+  
+  // Interactive states
+  hover-bg: map-get($colors, gray-700),
+  active-bg: map-get($colors, gray-600),
+  focus-ring: map-get($colors, blue-400),
+  
+  // Component backgrounds
+  card-bg: map-get($colors, gray-800),
+  input-bg: map-get($colors, gray-700),
+  overlay-bg: rgba(0, 0, 0, 0.7)
+);
+
+// Typography Scale
+$font-sizes: (
+  xs: 0.75rem,    // 12px
+  sm: 0.875rem,   // 14px
+  base: 1rem,     // 16px
+  lg: 1.125rem,   // 18px
+  xl: 1.25rem,    // 20px
+  2xl: 1.5rem,    // 24px
+  3xl: 1.875rem,  // 30px
+  4xl: 2.25rem,   // 36px
+  5xl: 3rem       // 48px
+);
+
+$font-weights: (
+  light: 300,
+  normal: 400,
+  medium: 500,
+  semibold: 600,
+  bold: 700
+);
+
+$line-heights: (
+  tight: 1.25,
+  normal: 1.5,
+  relaxed: 1.75
+);
+
+// Spacing Scale
+$spacing: (
+  0: 0,
+  1: 0.25rem,   // 4px
+  2: 0.5rem,    // 8px
+  3: 0.75rem,   // 12px
+  4: 1rem,      // 16px
+  5: 1.25rem,   // 20px
+  6: 1.5rem,    // 24px
+  8: 2rem,      // 32px
+  10: 2.5rem,   // 40px
+  12: 3rem,     // 48px
+  16: 4rem,     // 64px
+  20: 5rem,     // 80px
+  24: 6rem      // 96px
+);
+
+// Border Radius
+$border-radius: (
+  none: 0,
+  sm: 0.125rem,   // 2px
+  base: 0.25rem,  // 4px
+  md: 0.375rem,   // 6px
+  lg: 0.5rem,     // 8px
+  xl: 0.75rem,    // 12px
+  2xl: 1rem,      // 16px
+  full: 9999px
+);
+
+// Shadows
+$shadows: (
+  sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05),
+  base: (0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)),
+  md: (0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)),
+  lg: (0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)),
+  xl: (0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)),
+  2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25),
+  inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)
+);
+
+// Breakpoints
+$breakpoints: (
+  sm: 640px,
+  md: 768px,
+  lg: 1024px,
+  xl: 1280px,
+  2xl: 1536px
+);
+
+// Z-index scale
+$z-index: (
+  hide: -1,
+  auto: auto,
+  base: 0,
+  dropdown: 10,
+  sticky: 20,
+  fixed: 30,
+  modal-backdrop: 40,
+  modal: 50,
+  popover: 60,
+  tooltip: 70,
+  toast: 80,
+  drawer: 90,
+  overlay: 100
+);
+
+// =================================
+// HELPER FUNCTIONS AND MIXINS
+// =================================
+
+// Color function
+@function color($name) {
+  @return map-get($colors, $name);
+}
+
+// Theme function - gets value from current theme
+@function theme($key) {
+  @if $theme-mode == 'dark' {
+    @return map-get($dark-theme, $key);
+  } @else {
+    @return map-get($light-theme, $key);
+  }
+}
+
+// Spacing function
+@function space($size) {
+  @return map-get($spacing, $size);
+}
+
+// Font size function
+@function font-size($size) {
+  @return map-get($font-sizes, $size);
+}
+
+// Font weight function
+@function font-weight($weight) {
+  @return map-get($font-weights, $weight);
+}
+
+// Border radius function
+@function radius($size) {
+  @return map-get($border-radius, $size);
+}
+
+// Shadow function
+@function shadow($size) {
+  @return map-get($shadows, $size);
+}
+
+// Z-index function
+@function z($layer) {
+  @return map-get($z-index, $layer);
+}
+
+// Media query mixins
+@mixin respond-to($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media (min-width: map-get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  } @else {
+    @warn "Breakpoint `#{$breakpoint}` not found in $breakpoints.";
+  }
+}
+
+@mixin respond-below($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media (max-width: map-get($breakpoints, $breakpoint) - 1px) {
+      @content;
+    }
+  } @else {
+    @warn "Breakpoint `#{$breakpoint}` not found in $breakpoints.";
+  }
+}
+
+// Theme mode variable (will be updated via CSS custom properties)
+$theme-mode: 'light' !default;
+
+// CSS Custom Properties for dynamic theme switching
+:root {
+  // Light theme (default)
+  --bg-primary: #{map-get($light-theme, bg-primary)};
+  --bg-secondary: #{map-get($light-theme, bg-secondary)};
+  --bg-tertiary: #{map-get($light-theme, bg-tertiary)};
+  --bg-elevated: #{map-get($light-theme, bg-elevated)};
+  
+  --text-primary: #{map-get($light-theme, text-primary)};
+  --text-secondary: #{map-get($light-theme, text-secondary)};
+  --text-tertiary: #{map-get($light-theme, text-tertiary)};
+  --text-disabled: #{map-get($light-theme, text-disabled)};
+  --text-inverse: #{map-get($light-theme, text-inverse)};
+  
+  --border-light: #{map-get($light-theme, border-light)};
+  --border-medium: #{map-get($light-theme, border-medium)};
+  --border-strong: #{map-get($light-theme, border-strong)};
+  
+  --accent-primary: #{map-get($light-theme, accent-primary)};
+  --accent-primary-hover: #{map-get($light-theme, accent-primary-hover)};
+  --accent-secondary: #{map-get($light-theme, accent-secondary)};
+  --accent-secondary-hover: #{map-get($light-theme, accent-secondary-hover)};
+  
+  --hover-bg: #{map-get($light-theme, hover-bg)};
+  --active-bg: #{map-get($light-theme, active-bg)};
+  --focus-ring: #{map-get($light-theme, focus-ring)};
+  
+  --card-bg: #{map-get($light-theme, card-bg)};
+  --input-bg: #{map-get($light-theme, input-bg)};
+  --overlay-bg: #{map-get($light-theme, overlay-bg)};
+}
+
+// Dark theme
+[data-theme="dark"] {
+  --bg-primary: #{map-get($dark-theme, bg-primary)};
+  --bg-secondary: #{map-get($dark-theme, bg-secondary)};
+  --bg-tertiary: #{map-get($dark-theme, bg-tertiary)};
+  --bg-elevated: #{map-get($dark-theme, bg-elevated)};
+  
+  --text-primary: #{map-get($dark-theme, text-primary)};
+  --text-secondary: #{map-get($dark-theme, text-secondary)};
+  --text-tertiary: #{map-get($dark-theme, text-tertiary)};
+  --text-disabled: #{map-get($dark-theme, text-disabled)};
+  --text-inverse: #{map-get($dark-theme, text-inverse)};
+  
+  --border-light: #{map-get($dark-theme, border-light)};
+  --border-medium: #{map-get($dark-theme, border-medium)};
+  --border-strong: #{map-get($dark-theme, border-strong)};
+  
+  --accent-primary: #{map-get($dark-theme, accent-primary)};
+  --accent-primary-hover: #{map-get($dark-theme, accent-primary-hover)};
+  --accent-secondary: #{map-get($dark-theme, accent-secondary)};
+  --accent-secondary-hover: #{map-get($dark-theme, accent-secondary-hover)};
+  
+  --hover-bg: #{map-get($dark-theme, hover-bg)};
+  --active-bg: #{map-get($dark-theme, active-bg)};
+  --focus-ring: #{map-get($dark-theme, focus-ring)};
+  
+  --card-bg: #{map-get($dark-theme, card-bg)};
+  --input-bg: #{map-get($dark-theme, input-bg)};
+  --overlay-bg: #{map-get($dark-theme, overlay-bg)};
+}
